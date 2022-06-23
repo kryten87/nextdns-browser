@@ -1,5 +1,7 @@
 # NextDNS Report Browser
 
+[Project Notes](https://www.notion.so/NestDNS-API-Report-Generator-854d70e85056438795423cb3ac49cc50)
+
 ## Description
 
 A [Nest](https://github.com/nestjs/nest) application which acts as the back end for the NextDNS Report Browser application.
