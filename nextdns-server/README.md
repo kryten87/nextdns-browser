@@ -27,6 +27,12 @@ A [Nest](https://github.com/nestjs/nest) application which acts as the back end 
 
 ## Notes
 
+### NextDNS API
+
+- [get device list](http://localhost:3000/nextdns/profiles/92921c/analytics/devices)
+- [get logs](http://localhost:3000/nextdns/profiles/92921c/logs?from=2022-06-23T21:08:05.741Z&to=2022-06-23T21:18:24.557Z&limit=50&raw=1)
+
+
 ### Initial Design
 
 - [API Documentation](https://nextdns.github.io/api/)
