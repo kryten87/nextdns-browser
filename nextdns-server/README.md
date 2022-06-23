@@ -31,6 +31,7 @@ A [Nest](https://github.com/nestjs/nest) application which acts as the back end 
 
 - [get device list](http://localhost:3000/nextdns/profiles/92921c/analytics/devices)
 - [get logs](http://localhost:3000/nextdns/profiles/92921c/logs?from=2022-06-23T21:08:05.741Z&to=2022-06-23T21:18:24.557Z&limit=50&raw=1)
+- [get profiles](http://localhost:3000/nextdns/profiles)
 
 
 ### Initial Design
