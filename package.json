@@ -1,0 +1,11 @@
+{
+  "name": "nextdns",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Dave Thomas <davet@ifit.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev:up": "docker-compose -f docker-compose.dev.yml up",
+    "dev:down": "docker-compose -f docker-compose.dev.yml down"
+  }
+}
