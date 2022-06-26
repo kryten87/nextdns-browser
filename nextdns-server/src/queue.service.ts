@@ -2,7 +2,8 @@ import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as amqp from 'amqplib';
 
-const pause = async (duration) => new Promise((resolve) => setTimeout(resolve, duration));
+const pause = async (duration) =>
+  new Promise((resolve) => setTimeout(resolve, duration));
 
 @Injectable()
 export class QueueService implements OnModuleInit, OnModuleDestroy {
@@ -13,7 +14,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private readonly config: ConfigService) {
     this.rabbitUrl = this.config.get<string>('RABBIT_URL');
-    this.incomingLogQueue = this.config.get<string>('RABBIT_INCOMING_LOG_QUEUE');
+    this.incomingLogQueue = this.config.get<string>(
+      'RABBIT_INCOMING_LOG_QUEUE',
+    );
   }
 
   async onModuleInit() {
@@ -27,7 +30,10 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   }
 
   sendToLogQueue(message: any) {
-    this.amqpChannel.sendToQueue(this.incomingLogQueue, Buffer.from(JSON.stringify(message)));
+    this.amqpChannel.sendToQueue(
+      this.incomingLogQueue,
+      Buffer.from(JSON.stringify(message)),
+    );
   }
 
   async onLogQueueMessage(handler: any) {
@@ -41,5 +47,4 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       return this.onLogQueueMessage(handler);
     }
   }
-
 }
