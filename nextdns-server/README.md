@@ -32,6 +32,38 @@ A [Nest](https://github.com/nestjs/nest) application which acts as the back end 
 - [get device list](http://localhost:3000/nextdns/profiles/92921c/analytics/devices)
 - [get logs](http://localhost:3000/nextdns/profiles/92921c/logs?from=2022-06-23T21:08:05.741Z&to=2022-06-23T21:18:24.557Z&limit=50&raw=1)
 - [get profiles](http://localhost:3000/nextdns/profiles)
+- [stream logs](https://nextdns.github.io/api/#streaming)
+
+### Problems:
+- the device list is not deduplicated; a single device can appear many times with many different IDs
+    - this makes it difficult (impossible) to paginate results appropriately directly from the API because if I want to (correctly) show all results for a given device, I need to get all logs entries for multiple device IDs.
+
+### Using a local database:
+
+Consider using a local database.
+- use the "stream logs" functionality to get logs as they are generated
+  - push them to a messaging queue as they come in
+  - queue handler will:
+    - deduplicate items based on client IP, device, timestamp
+    - trigger a re-fetch of devices if the device is not currently in the database
+
+#### Architecture
+
+1. stream logs handler
+  - pushes incoming logs to...
+2. messaging queue
+3. queue listener
+  - if it's an incoming log message, insert into database (ignoring duplicate client IP, device, timestamp)
+  - if the device does not exist in the database (based on id, name), insert it
+
+**Database Tables**
+(* denotes an index)
+`logs` -- the log entries (id*, client, clientIp*, deviceId*, domain*, encrypted, protocol, reasons*, root, status*, timestamp*, tracker)
+`devices` -- the device details (id*, name*, model, localIp)
+
+
+
+
 
 
 ### Initial Design
