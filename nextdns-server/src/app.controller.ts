@@ -1,5 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller } from '@nestjs/common';
 import { QueueService } from './queue.service';
 import * as EventSource from 'eventsource';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +12,6 @@ export class AppController {
   private eventSource: any;
 
   constructor(
-    private readonly appService: AppService,
     private readonly queueService: QueueService,
     private readonly configService: ConfigService,
   ) {
