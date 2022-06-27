@@ -95,7 +95,7 @@ Consider using a local database.
 #### TODO
 
 ✅ 1. set up database + migrations
-  - for now, migrations are handled by SQL files in `docker/mariadb/docker-entrypoint-initdb.d/`
+  - using Knex for database connection & [migrations](http://knexjs.org/guide/migrations.html)
 2. write basic database routines: insert event, insert device, insert proiles
 3. write startup actions: get profiles & update database
 4. write handler for incoming queue messages
