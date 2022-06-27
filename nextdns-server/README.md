@@ -96,7 +96,7 @@ Consider using a local database.
 
 ✅ 1. set up database + migrations
   - using Knex for database connection & [migrations](http://knexjs.org/guide/migrations.html)
-2. write basic database routines: insert event, insert device, insert proiles
+2. write basic database routines: insert event, insert device, insert profiles, get profiles, get devices
 3. write startup actions: get profiles & update database
 4. write handler for incoming queue messages
 5. write SSE handler to push messages to queue
