@@ -95,8 +95,10 @@ Consider using a local database.
 1. set up database + migrations
 2. write basic database routines: insert event, insert device, insert proiles
 3. write startup actions: get profiles & update database
-4. write event loop
-5. write HTTP /api routes
-6. write front end
-7. write CRON jobs
-8. write build process
+4. write handler for incoming queue messages
+5. write SSE handler to push messages to queue
+6. wire up event loop
+7. write HTTP /api routes
+8. write front end
+9. write CRON jobs
+10. write build process
