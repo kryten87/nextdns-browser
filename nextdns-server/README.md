@@ -71,3 +71,32 @@ Consider using a local database.
 - [API Documentation](https://nextdns.github.io/api/)
 - need to proxy requests from the web front end to the NextDNS API, adding the appropriate API key
 
+#### How the App Works
+
+1. start up
+  - load list of profiles from API, update database
+  - load "last stream position" from database for each profile (if exists), start streaming from that position
+2. streaming loop
+  - on event
+    - insert event into database (ignore dupes) -- id = hash of timestamp, domain, device ID
+    - insert device into database (ignore dupes)
+3. HTTP API
+  - listens for requests from client, responds
+    - GET / -- serves app
+    - GET /api/logs?<search params>
+    - GET /api/profiles
+    - GET /api/devices
+4. Miscellaneous clean up
+  - CRON jobs?
+    - delete logs older than <something>
+
+#### TODO
+
+1. set up database + migrations
+2. write basic database routines: insert event, insert device, insert proiles
+3. write startup actions: get profiles & update database
+4. write event loop
+5. write HTTP /api routes
+6. write front end
+7. write CRON jobs
+8. write build process
