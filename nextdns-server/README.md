@@ -78,8 +78,10 @@ Consider using a local database.
   - load "last stream position" from database for each profile (if exists), start streaming from that position
 2. streaming loop
   - on event
-    - insert event into database (ignore dupes) -- id = hash of timestamp, domain, device ID
-    - insert device into database (ignore dupes)
+    - push event to queue in SSE handler
+    - pop event off queue in queue handler
+      - insert event into database (ignore dupes) -- id = hash of timestamp, domain, device ID
+      - insert device into database (ignore dupes)
 3. HTTP API
   - listens for requests from client, responds
     - GET / -- serves app
