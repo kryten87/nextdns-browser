@@ -78,8 +78,10 @@ Consider using a local database.
   - load "last stream position" from database for each profile (if exists), start streaming from that position
 2. streaming loop
   - on event
-    - insert event into database (ignore dupes) -- id = hash of timestamp, domain, device ID
-    - insert device into database (ignore dupes)
+    - push event to queue in SSE handler
+    - pop event off queue in queue handler
+      - insert event into database (ignore dupes) -- id = hash of timestamp, domain, device ID
+      - insert device into database (ignore dupes)
 3. HTTP API
   - listens for requests from client, responds
     - GET / -- serves app
@@ -92,11 +94,14 @@ Consider using a local database.
 
 #### TODO
 
-1. set up database + migrations
+✅ 1. set up database + migrations
+  - for now, migrations are handled by SQL files in `docker/mariadb/docker-entrypoint-initdb.d/`
 2. write basic database routines: insert event, insert device, insert proiles
 3. write startup actions: get profiles & update database
-4. write event loop
-5. write HTTP /api routes
-6. write front end
-7. write CRON jobs
-8. write build process
+4. write handler for incoming queue messages
+5. write SSE handler to push messages to queue
+6. wire up event loop
+7. write HTTP /api routes
+8. write front end
+9. write CRON jobs
+10. write build process
