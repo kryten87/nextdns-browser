@@ -121,4 +121,8 @@ export class DatabaseService implements OnModuleDestroy {
   async getDevices(): Promise<Device[]> {
     return this.connection('devices').select();
   }
+
+  async getProfiles(): Promise<Profile[]> {
+    return this.connection('profiles').select();
+  }
 }
