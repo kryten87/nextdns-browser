@@ -130,30 +130,14 @@ describe('NextDnsApiService', () => {
 
       it('should return the expected values', async () => {
         const result = await service.getProfiles();
+        const method = 'GET';
+        const headers = { 'X-Api-Key': apiKey };
 
         expect(mockAxios).toBeCalledTimes(3);
-        expect(mockAxios.mock.calls[0]).toEqual([
-          {
-            method: 'GET',
-            url: `${baseUrl}/profiles`,
-            headers: { 'X-Api-Key': apiKey },
-          },
-        ]);
-
-        expect(mockAxios.mock.calls[1]).toEqual([
-          {
-            method: 'GET',
-            url: `${baseUrl}/profiles?cursor=cursor0`,
-            headers: { 'X-Api-Key': apiKey },
-          },
-        ]);
-
-        expect(mockAxios.mock.calls[2]).toEqual([
-          {
-            method: 'GET',
-            url: `${baseUrl}/profiles?cursor=cursor1`,
-            headers: { 'X-Api-Key': apiKey },
-          },
+        expect(mockAxios.mock.calls).toEqual([
+          [{ method, url: `${baseUrl}/profiles`, headers }],
+          [{ method, url: `${baseUrl}/profiles?cursor=cursor0`, headers }],
+          [{ method, url: `${baseUrl}/profiles?cursor=cursor1`, headers }],
         ]);
 
         expect(result).toEqual(allProfiles);
