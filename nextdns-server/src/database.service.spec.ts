@@ -228,7 +228,9 @@ describe('DatabaseService', () => {
     ];
 
     beforeEach(async () => {
-      await Promise.all(profiles.map((profile) => service.insertProfile(profile)));
+      await Promise.all(
+        profiles.map((profile) => service.insertProfile(profile)),
+      );
     });
 
     it('should get the expected results', async () => {
