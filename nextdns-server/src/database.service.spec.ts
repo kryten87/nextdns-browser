@@ -218,4 +218,22 @@ describe('DatabaseService', () => {
       expect(result).toEqual(devices);
     });
   });
+
+  describe('getProfiles', () => {
+    const profiles = [
+      { id: 'abcd01', fingerprint: 'fp6872abcdefabcd01', name: 'Profile 01' },
+      { id: 'abcd02', fingerprint: 'fp6872abcdefabcd02', name: 'Profile 02' },
+      { id: 'abcd03', fingerprint: 'fp6872abcdefabcd03', name: 'Profile 03' },
+      { id: 'abcd04', fingerprint: 'fp6872abcdefabcd04', name: 'Profile 04' },
+    ];
+
+    beforeEach(async () => {
+      await Promise.all(profiles.map((profile) => service.insertProfile(profile)));
+    });
+
+    it('should get the expected results', async () => {
+      const result = await service.getProfiles();
+      expect(result).toEqual(profiles);
+    });
+  });
 });
