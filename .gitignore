@@ -36,5 +36,6 @@ lerna-debug.log*
 
 # RabbitMQ Files
 docker/rabbitmq
+docker/mariadb/data
 
 nextdns-server/exampledata.json
