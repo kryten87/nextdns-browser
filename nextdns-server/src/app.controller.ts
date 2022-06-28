@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { QueueService } from './queue.service';
+import { QueueService } from './services/queue.service';
 import * as EventSource from 'eventsource';
 import { ConfigService } from '@nestjs/config';
 import { writeFileSync } from 'fs';

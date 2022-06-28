@@ -25,7 +25,7 @@ describe('DatabaseService', () => {
     }).compile();
     service = module.get<DatabaseService>(DatabaseService);
     await service.connection.migrate.latest({
-      directory: `${__dirname}/migrations`,
+      directory: `${__dirname}/../migrations`,
     });
   });
 
