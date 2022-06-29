@@ -75,6 +75,7 @@ Consider using a local database.
 
 1. start up
   - load list of profiles from API, update database
+  - load list of devices from API, update database
   - load "last stream position" from database for each profile (if exists), start streaming from that position
 2. streaming loop
   - on event
