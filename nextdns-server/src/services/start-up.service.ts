@@ -1,6 +1,6 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from './database.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { NextDnsApiService } from './next-dns-api.service';
 
 @Injectable()

@@ -1,8 +1,8 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import knex from 'knex';
-import * as crypto from 'crypto';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { MigrationSource } from '../libs/migration-source';
+import * as crypto from 'crypto';
+import knex from 'knex';
 
 export interface Profile {
   id: string;

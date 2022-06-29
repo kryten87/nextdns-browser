@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { QueueService } from './services/queue.service';
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
+// import { QueueService } from './services/queue.service';
+// import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AppController', () => {
   let appController: AppController;
 
-  const mockQueueService = {
-    onLogQueueMessage: jest.fn(),
-  };
+  // const mockQueueService = {
+  //   onLogQueueMessage: jest.fn(),
+  // };
 
   beforeEach(async () => {
     /*

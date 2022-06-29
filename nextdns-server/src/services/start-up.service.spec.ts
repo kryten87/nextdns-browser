@@ -1,8 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { StartUpService } from './start-up.service';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from './database.service';
 import { NextDnsApiService } from './next-dns-api.service';
+import { StartUpService } from './start-up.service';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('StartUpService', () => {
   let service: StartUpService;

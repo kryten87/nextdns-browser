@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { QueueService } from './queue.service';
 import { ConfigService } from '@nestjs/config';
+import { QueueService } from './queue.service';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('QueueService', () => {
   let service: QueueService;

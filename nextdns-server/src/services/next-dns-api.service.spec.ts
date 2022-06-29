@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { NextDnsApiService } from './next-dns-api.service';
 import { ConfigService } from '@nestjs/config';
+import { NextDnsApiService } from './next-dns-api.service';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('NextDnsApiService', () => {
   let service: NextDnsApiService;

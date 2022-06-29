@@ -1,7 +1,7 @@
+import { ConfigService } from '@nestjs/config';
 import { Controller } from '@nestjs/common';
 import { QueueService } from './services/queue.service';
 import * as EventSource from 'eventsource';
-import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {

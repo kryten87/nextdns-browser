@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DatabaseService } from './database.service';
 import { ConfigService } from '@nestjs/config';
+import { DatabaseService } from './database.service';
 import { MigrationSource } from '../libs/migration-source';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('DatabaseService', () => {
   let service: DatabaseService;

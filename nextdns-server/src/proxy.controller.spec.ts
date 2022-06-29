@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProxyController } from './proxy.controller';
 import { ConfigService } from '@nestjs/config';
+import { ProxyController } from './proxy.controller';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('ProxyController', () => {
   let controller: ProxyController;
