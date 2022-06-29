@@ -2,9 +2,7 @@ import { Knex } from 'knex';
 
 export class MigrationSource {
   getMigrations(): Promise<string[]> {
-    return Promise.resolve([
-      '20220627211021-initial-table-creation',
-    ]);
+    return Promise.resolve(['20220627211021-initial-table-creation']);
   }
 
   getMigrationName(migration: string): string {
@@ -13,7 +11,6 @@ export class MigrationSource {
 
   getMigration(migration: string): any {
     switch (migration) {
-
       case '20220627211021-initial-table-creation':
         return {
           async up(knex: Knex): Promise<void> {
@@ -54,5 +51,4 @@ export class MigrationSource {
         };
     }
   }
-
 }
