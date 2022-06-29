@@ -2,6 +2,7 @@ import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import knex from 'knex';
 import * as crypto from 'crypto';
+import { MigrationSource } from '../libs/migration-source';
 
 export interface Profile {
   id: string;
@@ -78,6 +79,12 @@ export class DatabaseService implements OnModuleDestroy {
     if (this.connection) {
       await this.connection.destroy();
     }
+  }
+
+  async migrateLatest(): Promise<void> {
+    await this.connection.migrate.latest({
+      migrationSource: new MigrationSource(),
+    });
   }
 
   async insertProfile(profile: Profile): Promise<string> {
