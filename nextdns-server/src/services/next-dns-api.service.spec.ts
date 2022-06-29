@@ -55,7 +55,7 @@ describe('NextDnsApiService', () => {
       ];
 
       beforeEach(() => {
-        mockAxios.mockResolvedValue({ data: profiles });
+        mockAxios.mockResolvedValue({ data: { data: profiles } });
       });
 
       it('should return the expected values', async () => {
@@ -124,7 +124,7 @@ describe('NextDnsApiService', () => {
               meta: { pagination: { cursor: `cursor${idx}` } },
             }),
           };
-          mockAxios.mockResolvedValueOnce(expected);
+          mockAxios.mockResolvedValueOnce({ data: expected });
         });
       });
 
