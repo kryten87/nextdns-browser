@@ -56,12 +56,12 @@ export class DatabaseService implements OnModuleDestroy {
     const params = {
       client,
       ...(client === 'sqlite3' && {
+        useNullAsDefault: true,
         connection: {
           filename: this.configService.get<string>('SQLITE_FILE'),
-          useNullAsDefault: true,
         },
       }),
-      ...(client === 'mysql' && {
+      ...(client === 'mysql2' && {
         connection: {
           host: this.configService.get<string>('MARIADB_HOST'),
           port: this.configService.get<string>('MARIADB_PORT'),
@@ -71,7 +71,6 @@ export class DatabaseService implements OnModuleDestroy {
         },
       }),
     };
-    console.log('... connection params', params);
     this.connection = knex(params);
   }
 
