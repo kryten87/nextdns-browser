@@ -26,11 +26,12 @@ export class NextDnsApiService {
     const url = [`${this.baseUrl}/profiles`, cursor && `cursor=${cursor}`]
       .filter(Boolean)
       .join('?');
-    const result = await this.axiosLib({
+    const response = await this.axiosLib({
       method: 'GET',
       url,
       headers: { 'X-Api-Key': this.apiKey },
     });
+    const result = response.data;
     const nextCursor = result?.meta?.pagination?.cursor;
     if (nextCursor) {
       return [
