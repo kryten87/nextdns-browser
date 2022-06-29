@@ -1,10 +1,8 @@
-import { Controller } from '@nestjs/common';
-import { QueueService } from './queue.service';
-import * as EventSource from 'eventsource';
 import { ConfigService } from '@nestjs/config';
-import { writeFileSync } from 'fs';
+import { Controller } from '@nestjs/common';
+import { QueueService } from './services/queue.service';
+import * as EventSource from 'eventsource';
 
-const values = [];
 @Controller()
 export class AppController {
   private readonly apiKey: string;
@@ -35,9 +33,5 @@ export class AppController {
   queueHandler = async (message) => {
     const data = JSON.parse(JSON.parse(message)?.data || '{}');
     console.log('..... queue handler', data);
-    values.push(data);
-    if (values.length === 10) {
-      writeFileSync('./exampledata.json', JSON.stringify(values, null, 2));
-    }
   };
 }

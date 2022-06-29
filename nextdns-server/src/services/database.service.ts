@@ -1,7 +1,8 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import knex from 'knex';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { MigrationSource } from '../libs/migration-source';
 import * as crypto from 'crypto';
+import knex from 'knex';
 
 export interface Profile {
   id: string;
@@ -55,12 +56,12 @@ export class DatabaseService implements OnModuleDestroy {
     const params = {
       client,
       ...(client === 'sqlite3' && {
+        useNullAsDefault: true,
         connection: {
           filename: this.configService.get<string>('SQLITE_FILE'),
-          useNullAsDefault: true,
         },
       }),
-      ...(client === 'mysql' && {
+      ...(client === 'mysql2' && {
         connection: {
           host: this.configService.get<string>('MARIADB_HOST'),
           port: this.configService.get<string>('MARIADB_PORT'),
@@ -70,7 +71,6 @@ export class DatabaseService implements OnModuleDestroy {
         },
       }),
     };
-    console.log('... connection params', params);
     this.connection = knex(params);
   }
 
@@ -78,6 +78,12 @@ export class DatabaseService implements OnModuleDestroy {
     if (this.connection) {
       await this.connection.destroy();
     }
+  }
+
+  async migrateLatest(): Promise<void> {
+    await this.connection.migrate.latest({
+      migrationSource: new MigrationSource(),
+    });
   }
 
   async insertProfile(profile: Profile): Promise<string> {

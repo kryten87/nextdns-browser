@@ -1,5 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { ProxyController } from './proxy.controller';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('ProxyController', () => {
   let controller: ProxyController;
@@ -7,6 +8,7 @@ describe('ProxyController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProxyController],
+      providers: [ConfigService],
     }).compile();
 
     controller = module.get<ProxyController>(ProxyController);

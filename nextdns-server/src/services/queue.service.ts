@@ -1,5 +1,5 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import * as amqp from 'amqplib';
 
 const pause = async (duration) =>

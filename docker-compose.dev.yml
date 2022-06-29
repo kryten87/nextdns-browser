@@ -23,3 +23,8 @@ services:
      - ./docker/mariadb/data/:/var/lib/mysql/
     ports:
       - 3306:3306
+
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - 8080:8080
