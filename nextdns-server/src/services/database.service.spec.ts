@@ -150,7 +150,16 @@ describe('DatabaseService', () => {
             localIp: '192.168.1.1',
           },
           status: 'default',
-          reasons: [],
+          reasons: [
+            {
+              id: 'blocklist:nextdns-recommended',
+              name: 'NextDNS Ads & Trackers Blocklist',
+            },
+            {
+              id: 'blocklist:nextdns-other',
+              name: 'NextDNS Other',
+            },
+          ],
         };
         const id = await service.insertEvent(event);
         expect(id).not.toBe('');
@@ -173,7 +182,8 @@ describe('DatabaseService', () => {
           client: event.client,
           deviceId: event.device.id,
           status: event.status,
-          reasons: (event.reasons || []).join(', '),
+          reasons:
+            'NextDNS Ads & Trackers Blocklist (blocklist:nextdns-recommended), NextDNS Other (blocklist:nextdns-other)',
         });
 
         // query the database for that device ID & check the results
