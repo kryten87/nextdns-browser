@@ -92,6 +92,7 @@ describe('DatabaseService', () => {
 
       it('should correctly insert an event', async () => {
         const event = {
+          profileId: 'abc123',
           timestamp: '2022-06-26T05:17:42.192Z',
           domain: 'vortex.data.microsoft.com',
           root: 'microsoft.com',
@@ -115,6 +116,7 @@ describe('DatabaseService', () => {
         expect(row).toEqual({
           id,
           timestamp: new Date(event.timestamp).valueOf() / 1000,
+          profileId: event.profileId,
           domain: event.domain,
           root: event.root,
           tracker: event.tracker,
@@ -132,6 +134,7 @@ describe('DatabaseService', () => {
     describe('non-existent device', () => {
       it('should correctly insert an event and device', async () => {
         const event = {
+          profileId: 'abc123',
           timestamp: '2022-06-26T05:17:42.192Z',
           domain: 'vortex.data.microsoft.com',
           root: 'microsoft.com',
@@ -160,6 +163,7 @@ describe('DatabaseService', () => {
         expect(newEvent).toEqual({
           id,
           timestamp: new Date(event.timestamp).valueOf() / 1000,
+          profileId: event.profileId,
           domain: event.domain,
           root: event.root,
           tracker: event.tracker,
