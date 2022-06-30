@@ -19,6 +19,7 @@ export interface Device {
 
 export interface RawEvent {
   timestamp: string;
+  profileId: string;
   domain: string;
   root: string;
   tracker: string;
@@ -33,6 +34,7 @@ export interface RawEvent {
 
 export interface EventModel {
   timestamp: number; // unix timestamp
+  profileId: string;
   domain: string;
   root: string;
   tracker: string;
@@ -87,7 +89,7 @@ export class DatabaseService implements OnModuleDestroy {
   }
 
   async insertProfile(profile: Profile): Promise<string> {
-    await this.connection('profiles').insert(profile);
+    await this.connection('profiles').insert(profile).onConflict().ignore();
     return profile.id;
   }
 
@@ -109,6 +111,7 @@ export class DatabaseService implements OnModuleDestroy {
     await this.connection('events').insert({
       id,
       timestamp,
+      profileId: event.profileId,
       domain: event.domain,
       root: event.root,
       tracker: event.tracker,
