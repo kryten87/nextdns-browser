@@ -17,6 +17,11 @@ export interface Device {
   localIp: string;
 }
 
+interface Reason {
+  id: string;
+  name: string;
+}
+
 export interface RawEvent {
   timestamp: string;
   profileId: string;
@@ -29,7 +34,7 @@ export interface RawEvent {
   client: string;
   device: Device;
   status: string;
-  reasons: string[];
+  reasons: Reason[];
 }
 
 export interface EventModel {
@@ -108,21 +113,26 @@ export class DatabaseService implements OnModuleDestroy {
       )
       .digest('hex');
     const timestamp = new Date(event.timestamp).valueOf() / 1000;
-    await this.connection('events').insert({
-      id,
-      timestamp,
-      profileId: event.profileId,
-      domain: event.domain,
-      root: event.root,
-      tracker: event.tracker,
-      encrypted: event.encrypted,
-      protocol: event.protocol,
-      clientIp: event.clientIp,
-      client: event.client,
-      deviceId: event.device.id,
-      status: event.status,
-      reasons: (event.reasons || []).join(', '),
-    });
+    await this.connection('events')
+      .insert({
+        id,
+        timestamp,
+        profileId: event.profileId,
+        domain: event.domain,
+        root: event.root,
+        tracker: event.tracker,
+        encrypted: event.encrypted,
+        protocol: event.protocol,
+        clientIp: event.clientIp,
+        client: event.client,
+        deviceId: event.device.id,
+        status: event.status,
+        reasons: event.reasons
+          .map((reason) => `${reason.name} (${reason.id})`)
+          .join(', '),
+      })
+      .onConflict()
+      .ignore();
     await this.insertDevice(event.device);
     return id;
   }
