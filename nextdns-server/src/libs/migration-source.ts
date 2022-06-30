@@ -30,7 +30,7 @@ export class MigrationSource {
             await knex.schema.createTable('events', (table) => {
               table.string('id').primary();
               table.string('profileId').notNullable().index();
-              table.float('timestamp').notNullable().index();
+              table.double('timestamp').notNullable().index();
               table.string('domain').nullable();
               table.string('root').nullable();
               table.string('tracker').nullable();
