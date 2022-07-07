@@ -8,6 +8,8 @@ export interface Profile {
   id: string;
   fingerprint: string;
   name: string;
+  role?: string;
+  lastEventId?: string;
 }
 
 export interface Device {
@@ -17,8 +19,14 @@ export interface Device {
   localIp: string;
 }
 
+interface Reason {
+  id: string;
+  name: string;
+}
+
 export interface RawEvent {
   timestamp: string;
+  profileId: string;
   domain: string;
   root: string;
   tracker: string;
@@ -28,11 +36,12 @@ export interface RawEvent {
   client: string;
   device: Device;
   status: string;
-  reasons: string[];
+  reasons: Reason[];
 }
 
 export interface EventModel {
   timestamp: number; // unix timestamp
+  profileId: string;
   domain: string;
   root: string;
   tracker: string;
@@ -87,8 +96,14 @@ export class DatabaseService implements OnModuleDestroy {
   }
 
   async insertProfile(profile: Profile): Promise<string> {
-    await this.connection('profiles').insert(profile);
+    await this.connection('profiles').insert(profile).onConflict().ignore();
     return profile.id;
+  }
+
+  async setLastEventId(profileId: string, lastEventId: string): Promise<void> {
+    await this.connection('profiles')
+      .update({ lastEventId })
+      .where('id', '=', profileId);
   }
 
   async insertDevice(device: Device): Promise<string> {
@@ -106,20 +121,26 @@ export class DatabaseService implements OnModuleDestroy {
       )
       .digest('hex');
     const timestamp = new Date(event.timestamp).valueOf() / 1000;
-    await this.connection('events').insert({
-      id,
-      timestamp,
-      domain: event.domain,
-      root: event.root,
-      tracker: event.tracker,
-      encrypted: event.encrypted,
-      protocol: event.protocol,
-      clientIp: event.clientIp,
-      client: event.client,
-      deviceId: event.device.id,
-      status: event.status,
-      reasons: (event.reasons || []).join(', '),
-    });
+    await this.connection('events')
+      .insert({
+        id,
+        timestamp,
+        profileId: event.profileId,
+        domain: event.domain,
+        root: event.root,
+        tracker: event.tracker,
+        encrypted: event.encrypted,
+        protocol: event.protocol,
+        clientIp: event.clientIp,
+        client: event.client,
+        deviceId: event.device.id,
+        status: event.status,
+        reasons: event.reasons
+          .map((reason) => `${reason.name} (${reason.id})`)
+          .join(', '),
+      })
+      .onConflict()
+      .ignore();
     await this.insertDevice(event.device);
     return id;
   }

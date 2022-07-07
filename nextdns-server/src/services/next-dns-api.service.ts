@@ -1,6 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Inject, Optional } from '@nestjs/common';
 import axios from 'axios';
+import { Profile } from './database.service';
+import * as EventSource from 'eventsource';
 
 @Injectable()
 export class NextDnsApiService {
@@ -40,5 +42,19 @@ export class NextDnsApiService {
       ];
     }
     return result.data;
+  }
+
+  initializeEventSource(profile: Profile, handler: any): any {
+    const url = [
+      `${this.baseUrl}profiles/${profile.id}/logs/stream`,
+      profile.lastEventId && `id=${profile.lastEventId}`,
+    ]
+      .filter(Boolean)
+      .join('?');
+    const eventSource = new EventSource(url, {
+      headers: { 'X-Api-Key': this.apiKey },
+    });
+    eventSource.onmessage = handler;
+    return eventSource;
   }
 }

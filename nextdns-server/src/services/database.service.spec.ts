@@ -53,7 +53,30 @@ describe('DatabaseService', () => {
         .connection('profiles')
         .where('id', '=', id)
         .first();
-      expect(row).toEqual(profile);
+      expect(row).toEqual({ ...profile, role: null, lastEventId: null });
+    });
+  });
+
+  describe('setLastEventId', () => {
+    it('should update the profile', async () => {
+      const eventId = 'ab12cd34';
+      const profile = {
+        id: 'abcdef',
+        fingerprint: 'fp6872abcdefabcdef',
+        name: 'My Profile',
+      };
+      const id = await service.insertProfile(profile);
+      // query the database for that ID & check the results
+      let row = await service
+        .connection('profiles')
+        .where('id', '=', id)
+        .first();
+      expect(row.lastEventId).toBeNull();
+
+      await service.setLastEventId(id, eventId);
+      // query the database for that ID & check the results
+      row = await service.connection('profiles').where('id', '=', id).first();
+      expect(row.lastEventId).toBe(eventId);
     });
   });
 
@@ -92,6 +115,7 @@ describe('DatabaseService', () => {
 
       it('should correctly insert an event', async () => {
         const event = {
+          profileId: 'abc123',
           timestamp: '2022-06-26T05:17:42.192Z',
           domain: 'vortex.data.microsoft.com',
           root: 'microsoft.com',
@@ -115,6 +139,7 @@ describe('DatabaseService', () => {
         expect(row).toEqual({
           id,
           timestamp: new Date(event.timestamp).valueOf() / 1000,
+          profileId: event.profileId,
           domain: event.domain,
           root: event.root,
           tracker: event.tracker,
@@ -132,6 +157,7 @@ describe('DatabaseService', () => {
     describe('non-existent device', () => {
       it('should correctly insert an event and device', async () => {
         const event = {
+          profileId: 'abc123',
           timestamp: '2022-06-26T05:17:42.192Z',
           domain: 'vortex.data.microsoft.com',
           root: 'microsoft.com',
@@ -147,7 +173,16 @@ describe('DatabaseService', () => {
             localIp: '192.168.1.1',
           },
           status: 'default',
-          reasons: [],
+          reasons: [
+            {
+              id: 'blocklist:nextdns-recommended',
+              name: 'NextDNS Ads & Trackers Blocklist',
+            },
+            {
+              id: 'blocklist:nextdns-other',
+              name: 'NextDNS Other',
+            },
+          ],
         };
         const id = await service.insertEvent(event);
         expect(id).not.toBe('');
@@ -160,6 +195,7 @@ describe('DatabaseService', () => {
         expect(newEvent).toEqual({
           id,
           timestamp: new Date(event.timestamp).valueOf() / 1000,
+          profileId: event.profileId,
           domain: event.domain,
           root: event.root,
           tracker: event.tracker,
@@ -169,7 +205,8 @@ describe('DatabaseService', () => {
           client: event.client,
           deviceId: event.device.id,
           status: event.status,
-          reasons: (event.reasons || []).join(', '),
+          reasons:
+            'NextDNS Ads & Trackers Blocklist (blocklist:nextdns-recommended), NextDNS Other (blocklist:nextdns-other)',
         });
 
         // query the database for that device ID & check the results
@@ -236,7 +273,13 @@ describe('DatabaseService', () => {
 
     it('should get the expected results', async () => {
       const result = await service.getProfiles();
-      expect(result).toEqual(profiles);
+      expect(result).toEqual(
+        profiles.map((profile) => ({
+          ...profile,
+          role: null,
+          lastEventId: null,
+        })),
+      );
     });
   });
 });

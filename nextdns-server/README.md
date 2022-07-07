@@ -98,12 +98,12 @@ Consider using a local database.
 ✅ 1. set up database + migrations
   ✅ - using Knex for database connection & [migrations](http://knexjs.org/guide/migrations.html)
 ✅ 2. write basic database routines: insert event, insert device, insert profiles, get profiles, get devices
-3. write startup actions:
+✅ 3. write startup actions:
   ✅ - get profiles & update database
-  - get "last stream position" from database for each profile & start streaming from there
-4. write handler for incoming queue messages
-5. write SSE handler to push messages to queue
-6. wire up event loop
+  ✅ - get "last stream position" (`lastEventId`) from database **for each profile** & start streaming from there
+✅ 4. write handler for incoming queue messages
+✅ 5. write SSE handler to push messages to queue
+6. tests for items 3, 4, 5
 7. write HTTP /api routes
 8. write front end
 9. write CRON jobs

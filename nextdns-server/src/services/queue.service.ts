@@ -29,17 +29,23 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.amqpConnection.close();
   }
 
-  sendToLogQueue(message: any) {
+  sendToLogQueue(profileId: string, message: any) {
+    const data = JSON.parse(message.data);
+    data.profileId = profileId;
+    const fullMessage = {
+      ...message,
+      data,
+    };
     this.amqpChannel.sendToQueue(
       this.incomingLogQueue,
-      Buffer.from(JSON.stringify(message)),
+      Buffer.from(JSON.stringify(fullMessage)),
     );
   }
 
   async onLogQueueMessage(handler: any) {
     try {
       this.amqpChannel.consume(this.incomingLogQueue, async (message: any) => {
-        await handler(message.content.toString());
+        await handler(JSON.parse(message.content.toString()));
         this.amqpChannel.ack(message);
       });
     } catch (err) {
