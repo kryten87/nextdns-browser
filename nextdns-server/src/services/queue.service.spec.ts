@@ -5,12 +5,39 @@ import { Test, TestingModule } from '@nestjs/testing';
 describe('QueueService', () => {
   let service: QueueService;
 
+  const mockChannel = {
+    assertQueue: jest.fn().mockResolvedValue(true),
+    sendToQueue: jest.fn(),
+    ack: jest.fn(),
+    consume: jest.fn(),
+  };
+
+  const mockConnection = {
+    createChannel: jest.fn().mockResolvedValue(mockChannel),
+    close: jest.fn(),
+  };
+
+  const mockAmqp = {
+    connect: jest.fn().mockResolvedValue(mockConnection),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ConfigService, QueueService],
+      providers: [
+        ConfigService,
+        QueueService,
+        { provide: 'AMQP_LIB', useValue: mockAmqp },
+      ],
     }).compile();
 
     service = module.get<QueueService>(QueueService);
+
+    mockAmqp.connect.mockClear();
+    mockConnection.createChannel.mockClear();
+    mockChannel.assertQueue.mockClear();
+    mockChannel.sendToQueue.mockClear();
+    mockChannel.ack.mockClear();
+    mockChannel.consume.mockClear();
   });
 
   it('should be defined', () => {
@@ -18,26 +45,56 @@ describe('QueueService', () => {
   });
 
   describe('onModuleInit', () => {
-    it.todo('should connect to the messaging service');
+    it('should connect to the messaging service', async () => {
+      await service.onModuleInit();
+      expect(mockAmqp.connect.mock.calls.length).toBe(1);
+    });
 
-    it.todo('should create a channel');
+    it('should create a channel', async () => {
+      await service.onModuleInit();
+      expect(mockConnection.createChannel.mock.calls.length).toBe(1);
+    });
 
-    it.todo('should check to ensure the queue is set up');
+    it('should check to ensure the queue is set up', async () => {
+      await service.onModuleInit();
+      expect(mockChannel.assertQueue.mock.calls.length).toBe(1);
+    });
   });
 
   describe('onModuleDestroy', () => {
-    it.todo('should close the connection');
+    it('should close the connection', async () => {
+      await service.onModuleInit();
+      await service.onModuleDestroy();
+      expect(mockConnection.close.mock.calls.length).toBe(1);
+    });
   });
 
   describe('sendToLogQueue', () => {
-    it.todo('should send to message to the correct queue');
+    const profileId = `id-${Date.now()}`;
+    const message = {
+      data: JSON.stringify({ value: `some message data ${Date.now}` }),
+    };
+
+    it('should send to message to the correct queue', async () => {
+      await service.onModuleInit();
+      service.sendToLogQueue(profileId, message);
+      expect(mockChannel.sendToQueue.mock.calls.length).toBe(1);
+    });
   });
 
   describe('onLogQueueMessage', () => {
-    it.todo('should consume the message');
+    let message;
 
-    it.todo('should call the callback function');
+    beforeEach(() => {
+      message = {
+        data: JSON.stringify({ value: `some message data ${Date.now}` }),
+      };
+    });
 
-    it.todo('should acknowledge the message');
+    it('should consume the message', async () => {
+      await service.onModuleInit();
+      await service.onLogQueueMessage(message);
+      expect(mockChannel.consume.mock.calls.length).toBe(1);
+    });
   });
 });
