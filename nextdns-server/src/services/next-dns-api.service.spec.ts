@@ -21,18 +21,24 @@ describe('NextDnsApiService', () => {
     },
   };
 
+  const mockEventSource = { onmessage: null };
+
+  const eventSourceFactory = jest.fn().mockReturnValue(mockEventSource);
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NextDnsApiService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: 'AXIOS_LIB', useValue: mockAxios },
+        { provide: 'EVENTSOURCE_FACTORY', useValue: eventSourceFactory },
       ],
     }).compile();
 
     service = module.get<NextDnsApiService>(NextDnsApiService);
 
     mockAxios.mockClear();
+    eventSourceFactory.mockClear();
   });
 
   it('should be defined', () => {
@@ -142,6 +148,39 @@ describe('NextDnsApiService', () => {
 
         expect(result).toEqual(allProfiles);
       });
+    });
+  });
+
+  describe('initializeEventSource', () => {
+    let profile;
+    let handler;
+
+    beforeEach(() => {
+      profile = {
+        id: `id-${Date.now()}`,
+        fingerprint: `fp-${Date.now()}`,
+        name: `Profile ${Date.now()}`,
+      };
+      handler = `handler-${Date.now()}`;
+    });
+
+    it('should initialize an event source with the correct URL (no lastEventId)', () => {
+      service.initializeEventSource(profile, handler);
+      expect(eventSourceFactory.mock.calls.length).toBe(1);
+      expect(eventSourceFactory.mock.calls[0]).toEqual([
+        `${baseUrl}profiles/${profile.id}/logs/stream`,
+        { headers: { 'X-Api-Key': apiKey } },
+      ]);
+    });
+
+    it('should initialize an event source with the correct URL (lastEventId exists)', () => {
+      const lastEventId = `event-${Date.now()}`;
+      service.initializeEventSource({ ...profile, lastEventId }, handler);
+      expect(eventSourceFactory.mock.calls.length).toBe(1);
+      expect(eventSourceFactory.mock.calls[0]).toEqual([
+        `${baseUrl}profiles/${profile.id}/logs/stream?id=${lastEventId}`,
+        { headers: { 'X-Api-Key': apiKey } },
+      ]);
     });
   });
 });
