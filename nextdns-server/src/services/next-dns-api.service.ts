@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Inject, Optional } from '@nestjs/common';
-import axios from 'axios';
 import { Profile } from './database.service';
 import * as EventSource from 'eventsource';
+import axios from 'axios';
 
 type EventSourceFactory = (url: string, opts: any) => EventSource;
 

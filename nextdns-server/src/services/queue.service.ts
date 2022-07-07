@@ -1,10 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import {
-  Injectable,
   Inject,
-  Optional,
-  OnModuleInit,
+  Injectable,
   OnModuleDestroy,
+  OnModuleInit,
+  Optional,
 } from '@nestjs/common';
 import * as amqp from 'amqplib';
 
