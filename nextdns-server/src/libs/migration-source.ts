@@ -2,7 +2,10 @@ import { Knex } from 'knex';
 
 export class MigrationSource {
   getMigrations(): Promise<string[]> {
-    return Promise.resolve(['20220627211021-initial-table-creation']);
+    return Promise.resolve([
+      '20220627211021-initial-table-creation',
+      '20220702074000-add-profile-role',
+    ]);
   }
 
   getMigrationName(migration: string): string {
@@ -50,6 +53,22 @@ export class MigrationSource {
             await knex.schema.dropTable('profiles');
           },
         };
+
+      case '20220702074000-add-profile-role':
+        return {
+          async up(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('profiles', (table) => {
+              table.string('role');
+            });
+          },
+
+          async down(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('profiles', (table) => {
+              table.dropColumn('role');
+            });
+          },
+        };
+
     }
   }
 }
