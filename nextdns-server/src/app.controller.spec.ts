@@ -1,9 +1,9 @@
 import { AppController } from './app.controller';
 import { ConfigService } from '@nestjs/config';
-import { QueueService } from './services/queue.service';
-import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from './services/database.service';
 import { NextDnsApiService } from './services/next-dns-api.service';
+import { QueueService } from './services/queue.service';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('AppController', () => {
   let appController: AppController;
