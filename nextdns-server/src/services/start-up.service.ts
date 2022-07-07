@@ -12,8 +12,6 @@ export class StartUpService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // perform any necessary migrations
-    await this.databaseService.migrateLatest();
     // perform the app startup tasks
     await Promise.all([this.updateProfiles()]);
   }
