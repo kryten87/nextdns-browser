@@ -104,6 +104,11 @@ Consider using a local database.
 ✅ 4. write handler for incoming queue messages
 ✅ 5. write SSE handler to push messages to queue
 6. tests for items 3, 4, 5
+  - src/app.controller.ts
+  - src/services/database.service.ts
+  - src/services/next-dns-api.service.ts
+  - src/services/queue.service.ts
+  - src/services/start-up.service.ts
 7. write HTTP /api routes
 8. write front end
 9. write CRON jobs
