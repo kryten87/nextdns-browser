@@ -35,6 +35,8 @@ export class AppController implements OnModuleInit {
 
   queueHandler = async (message) => {
     await this.db.insertEvent(message.data);
-    // @TODO save lastEventId
+    if (message.data.profileId && message.lastEventId) {
+      await this.db.setLastEventId(message.data.profileId, message.lastEventId);
+    }
   };
 }
