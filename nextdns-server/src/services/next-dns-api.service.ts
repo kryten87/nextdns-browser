@@ -45,12 +45,15 @@ export class NextDnsApiService {
   }
 
   initializeEventSource(profile: Profile, handler: any): any {
-    const eventSource = new EventSource(
+    const url = [
       `${this.baseUrl}profiles/${profile.id}/logs/stream`,
-      {
-        headers: { 'X-Api-Key': this.apiKey },
-      },
-    );
+      profile.lastEventId && `id=${profile.lastEventId}`,
+    ]
+      .filter(Boolean)
+      .join('?');
+    const eventSource = new EventSource(url, {
+      headers: { 'X-Api-Key': this.apiKey },
+    });
     eventSource.onmessage = handler;
     return eventSource;
   }
