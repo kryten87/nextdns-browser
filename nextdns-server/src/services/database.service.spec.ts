@@ -57,6 +57,29 @@ describe('DatabaseService', () => {
     });
   });
 
+  describe('setLastEventId', () => {
+    it('should update the profile', async () => {
+      const eventId = 'ab12cd34';
+      const profile = {
+        id: 'abcdef',
+        fingerprint: 'fp6872abcdefabcdef',
+        name: 'My Profile',
+      };
+      const id = await service.insertProfile(profile);
+      // query the database for that ID & check the results
+      let row = await service
+        .connection('profiles')
+        .where('id', '=', id)
+        .first();
+      expect(row.lastEventId).toBeNull();
+
+      await service.setLastEventId(id, eventId);
+      // query the database for that ID & check the results
+      row = await service.connection('profiles').where('id', '=', id).first();
+      expect(row.lastEventId).toBe(eventId);
+    });
+  });
+
   describe('insertDevice', () => {
     it('should correctly insert a device', async () => {
       const device = {
@@ -251,7 +274,11 @@ describe('DatabaseService', () => {
     it('should get the expected results', async () => {
       const result = await service.getProfiles();
       expect(result).toEqual(
-        profiles.map((profile) => ({ ...profile, role: null, lastEventId: null }))
+        profiles.map((profile) => ({
+          ...profile,
+          role: null,
+          lastEventId: null,
+        })),
       );
     });
   });
