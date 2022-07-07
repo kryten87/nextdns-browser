@@ -5,6 +5,7 @@ export class MigrationSource {
     return Promise.resolve([
       '20220627211021-initial-table-creation',
       '20220702074000-add-profile-role',
+      '20220707093800-add-profile-lasteventid',
     ]);
   }
 
@@ -65,6 +66,21 @@ export class MigrationSource {
           async down(knex: Knex): Promise<void> {
             await knex.schema.alterTable('profiles', (table) => {
               table.dropColumn('role');
+            });
+          },
+        };
+
+      case '20220707093800-add-profile-lasteventid':
+        return {
+          async up(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('profiles', (table) => {
+              table.string('lastEventId').nullable();
+            });
+          },
+
+          async down(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('profiles', (table) => {
+              table.dropColumn('lastEventId');
             });
           },
         };
