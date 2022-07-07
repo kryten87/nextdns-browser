@@ -25,16 +25,17 @@ describe('AppController', () => {
     },
   ];
 
-  const mockQueueService = {
-    onLogQueueMessage: jest.fn(),
-  };
-
   const mockDbService = {
     getProfiles: jest.fn().mockResolvedValue(profiles),
   };
 
   const mockApiService = {
     initializeEventSource: jest.fn(),
+  };
+
+  const mockQueueService = {
+    onLogQueueMessage: jest.fn(),
+    sendToLogQueue: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -52,6 +53,8 @@ describe('AppController', () => {
 
     mockDbService.getProfiles.mockClear();
     mockApiService.initializeEventSource.mockClear();
+    mockQueueService.onLogQueueMessage.mockClear();
+    mockQueueService.sendToLogQueue.mockClear();
   });
 
   it('should be defined', () => {
@@ -79,9 +82,21 @@ describe('AppController', () => {
   });
 
   describe('createStreamHandler', () => {
-    it.todo('should return a handler function');
+    it('should return a handler function', () => {
+      const handler = appController.createStreamHandler(profiles[0].id);
+      expect(typeof handler).toBe('function');
+    });
 
-    it.todo('should send a message to the queue when the handler is called');
+    it('should send a message to the queue when the handler is called', async () => {
+      const message = 'this is a message';
+      const handler = appController.createStreamHandler(profiles[0].id);
+      await handler(message);
+      expect(mockQueueService.sendToLogQueue.mock.calls.length).toBe(1);
+      expect(mockQueueService.sendToLogQueue.mock.calls[0]).toEqual([
+        profiles[0].id,
+        message,
+      ]);
+    });
   });
 
   describe('queueHandler', () => {
