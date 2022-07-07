@@ -108,7 +108,7 @@ Consider using a local database.
   ✅ - src/services/database.service.ts
   ✅ - src/services/next-dns-api.service.ts
   ✅ - src/services/queue.service.ts
-  - src/services/start-up.service.ts
+  ✅ - src/services/start-up.service.ts
 7. write HTTP /api routes
 8. write front end
 9. write CRON jobs
