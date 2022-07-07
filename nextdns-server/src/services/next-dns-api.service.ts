@@ -1,8 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { Injectable, Inject, Optional } from '@nestjs/common';
-import axios from 'axios';
 import { Profile } from './database.service';
 import * as EventSource from 'eventsource';
+import axios from 'axios';
+
+type EventSourceFactory = (url: string, opts: any) => EventSource;
 
 @Injectable()
 export class NextDnsApiService {
@@ -12,6 +14,9 @@ export class NextDnsApiService {
   constructor(
     private readonly configService: ConfigService,
     @Optional() @Inject('AXIOS_LIB') private axiosLib: any,
+    @Optional()
+    @Inject('EVENTSOURCE_FACTORY')
+    private eventSourceFactory: EventSourceFactory,
   ) {
     if (!axiosLib) {
       this.axiosLib = axios;
@@ -51,9 +56,12 @@ export class NextDnsApiService {
     ]
       .filter(Boolean)
       .join('?');
-    const eventSource = new EventSource(url, {
+    const options = {
       headers: { 'X-Api-Key': this.apiKey },
-    });
+    };
+    const eventSource = this.eventSourceFactory
+      ? this.eventSourceFactory(url, options)
+      : new EventSource(url, options);
     eventSource.onmessage = handler;
     return eventSource;
   }

@@ -1,5 +1,11 @@
 import { ConfigService } from '@nestjs/config';
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  OnModuleDestroy,
+  OnModuleInit,
+  Optional,
+} from '@nestjs/common';
 import * as amqp from 'amqplib';
 
 const pause = async (duration) =>
@@ -12,15 +18,19 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   private amqpConnection: amqp.Connection;
   private amqpChannel: any;
 
-  constructor(private readonly config: ConfigService) {
+  constructor(
+    private readonly config: ConfigService,
+    @Optional() @Inject('AMQP_LIB') private amqpLib,
+  ) {
     this.rabbitUrl = this.config.get<string>('RABBIT_URL');
     this.incomingLogQueue = this.config.get<string>(
       'RABBIT_INCOMING_LOG_QUEUE',
     );
+    this.amqpLib = this.amqpLib || amqp;
   }
 
   async onModuleInit() {
-    this.amqpConnection = await amqp.connect(this.rabbitUrl);
+    this.amqpConnection = await this.amqpLib.connect(this.rabbitUrl);
     this.amqpChannel = await this.amqpConnection.createChannel();
     await this.amqpChannel.assertQueue(this.incomingLogQueue);
   }
@@ -32,10 +42,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   sendToLogQueue(profileId: string, message: any) {
     const data = JSON.parse(message.data);
     data.profileId = profileId;
-    const fullMessage = {
-      ...message,
-      data,
-    };
+    const fullMessage = { ...message, data };
     this.amqpChannel.sendToQueue(
       this.incomingLogQueue,
       Buffer.from(JSON.stringify(fullMessage)),

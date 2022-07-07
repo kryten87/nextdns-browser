@@ -1,7 +1,7 @@
 import { Controller, OnModuleInit } from '@nestjs/common';
-import { QueueService } from './services/queue.service';
 import { DatabaseService } from './services/database.service';
 import { NextDnsApiService } from './services/next-dns-api.service';
+import { QueueService } from './services/queue.service';
 
 @Controller()
 export class AppController implements OnModuleInit {
