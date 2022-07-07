@@ -100,7 +100,7 @@ Consider using a local database.
 ✅ 2. write basic database routines: insert event, insert device, insert profiles, get profiles, get devices
 3. write startup actions:
   ✅ - get profiles & update database
-  - get "last stream position" from database **for each profile** & start streaming from there
+  - get "last stream position" (`lastEventId`) from database **for each profile** & start streaming from there
 4. write handler for incoming queue messages
 5. write SSE handler to push messages to queue
 6. wire up event loop
