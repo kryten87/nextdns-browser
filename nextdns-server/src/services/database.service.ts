@@ -8,6 +8,8 @@ export interface Profile {
   id: string;
   fingerprint: string;
   name: string;
+  role?: string;
+  lastEventId?: string;
 }
 
 export interface Device {
@@ -96,6 +98,12 @@ export class DatabaseService implements OnModuleDestroy {
   async insertProfile(profile: Profile): Promise<string> {
     await this.connection('profiles').insert(profile).onConflict().ignore();
     return profile.id;
+  }
+
+  async setLastEventId(profileId: string, lastEventId: string): Promise<void> {
+    await this.connection('profiles')
+      .update({ lastEventId })
+      .where('id', '=', profileId);
   }
 
   async insertDevice(device: Device): Promise<string> {
