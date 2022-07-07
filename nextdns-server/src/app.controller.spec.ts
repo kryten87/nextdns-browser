@@ -27,6 +27,8 @@ describe('AppController', () => {
 
   const mockDbService = {
     getProfiles: jest.fn().mockResolvedValue(profiles),
+    insertEvent: jest.fn(),
+    setLastEventId: jest.fn(),
   };
 
   const mockApiService = {
@@ -52,6 +54,8 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
 
     mockDbService.getProfiles.mockClear();
+    mockDbService.insertEvent.mockClear();
+    mockDbService.setLastEventId.mockClear();
     mockApiService.initializeEventSource.mockClear();
     mockQueueService.onLogQueueMessage.mockClear();
     mockQueueService.sendToLogQueue.mockClear();
@@ -100,10 +104,38 @@ describe('AppController', () => {
   });
 
   describe('queueHandler', () => {
-    it.todo('should insert an event into the database');
+    let message: { data: { [key: string]: any }; lastEventId?: string };
+    let profileId: string;
 
-    it.todo('should not update the last event ID if none is present');
+    beforeEach(() => {
+      profileId = `profile-${Date.now()}`;
+      message = {
+        data: {
+          profileId,
+          msg: `Unique message ${Date.now()} ${Math.random()}`,
+        },
+      };
+    });
 
-    it.todo('should update the last event ID if it exists');
+    it('should insert an event into the database', async () => {
+      await appController.queueHandler(message);
+      expect(mockDbService.insertEvent.mock.calls.length).toBe(1);
+      expect(mockDbService.insertEvent.mock.calls[0][0]).toEqual(message.data);
+    });
+
+    it('should not update the last event ID if none is present', async () => {
+      await appController.queueHandler(message);
+      expect(mockDbService.setLastEventId.mock.calls.length).toBe(0);
+    });
+
+    it('should update the last event ID if it exists', async () => {
+      const lastEventId = `id-${Math.random()}`;
+      await appController.queueHandler({ ...message, lastEventId });
+      expect(mockDbService.setLastEventId.mock.calls.length).toBe(1);
+      expect(mockDbService.setLastEventId.mock.calls[0]).toEqual([
+        profileId,
+        lastEventId,
+      ]);
+    });
   });
 });
