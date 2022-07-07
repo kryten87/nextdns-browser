@@ -8,13 +8,34 @@ import { NextDnsApiService } from './services/next-dns-api.service';
 describe('AppController', () => {
   let appController: AppController;
 
+  const profiles = [
+    {
+      id: '92abcd',
+      fingerprint: 'fp6872abcdabcdabcd',
+      name: 'Profile 1',
+      role: null,
+      lastEventId: '64v3adtj68tk6chm6gabcdabcd',
+    },
+    {
+      id: '96abcd',
+      fingerprint: 'fpe9a1abcdabcdabcd',
+      name: 'Profile 2',
+      role: null,
+      lastEventId: '64v3adtj68tk6c9k6cabcdabcd',
+    },
+  ];
+
   const mockQueueService = {
     onLogQueueMessage: jest.fn(),
   };
 
-  const mockDbService = {};
+  const mockDbService = {
+    getProfiles: jest.fn().mockResolvedValue(profiles),
+  };
 
-  const mockApiService = {};
+  const mockApiService = {
+    initializeEventSource: jest.fn(),
+  };
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -28,6 +49,9 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
+
+    mockDbService.getProfiles.mockClear();
+    mockApiService.initializeEventSource.mockClear();
   });
 
   it('should be defined', () => {
@@ -35,9 +59,23 @@ describe('AppController', () => {
   });
 
   describe('onModuleInit', () => {
-    it.todo('should load the list of profiles from the database');
+    it('should load the list of profiles from the database', async () => {
+      await appController.onModuleInit();
 
-    it.todo('should initialze an event source for each profile');
+      expect(mockDbService.getProfiles.mock.calls.length).toBe(1);
+    });
+
+    it('should initialze an event source for each profile', async () => {
+      await appController.onModuleInit();
+
+      expect(mockApiService.initializeEventSource.mock.calls.length).toBe(2);
+      expect(mockApiService.initializeEventSource.mock.calls[0][0]).toEqual(
+        profiles[0],
+      );
+      expect(mockApiService.initializeEventSource.mock.calls[1][0]).toEqual(
+        profiles[1],
+      );
+    });
   });
 
   describe('createStreamHandler', () => {
