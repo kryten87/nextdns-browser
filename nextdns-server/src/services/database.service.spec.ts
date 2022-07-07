@@ -53,7 +53,7 @@ describe('DatabaseService', () => {
         .connection('profiles')
         .where('id', '=', id)
         .first();
-      expect(row).toEqual(profile);
+      expect(row).toEqual({ ...profile, role: null, lastEventId: null });
     });
   });
 
@@ -250,7 +250,9 @@ describe('DatabaseService', () => {
 
     it('should get the expected results', async () => {
       const result = await service.getProfiles();
-      expect(result).toEqual(profiles);
+      expect(result).toEqual(
+        profiles.map((profile) => ({ ...profile, role: null, lastEventId: null }))
+      );
     });
   });
 });
