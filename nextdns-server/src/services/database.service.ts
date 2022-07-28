@@ -1,5 +1,4 @@
-import { ConfigService } from '@nestjs/config';
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MigrationSource } from '../libs/migration-source';
 import * as crypto from 'crypto';
 import { InjectKnex, Knex } from 'nestjs-knex';
@@ -55,7 +54,7 @@ export interface EventModel {
 }
 
 @Injectable()
-export class DatabaseService  /* implements OnModuleDestroy */ {
+export class DatabaseService {
   constructor(@InjectKnex() private readonly knex: Knex) {}
 
   async migrateLatest(): Promise<void> {
@@ -70,7 +69,8 @@ export class DatabaseService  /* implements OnModuleDestroy */ {
   }
 
   async setLastEventId(profileId: string, lastEventId: string): Promise<void> {
-    await this.knex.table('profiles')
+    await this.knex
+      .table('profiles')
       .update({ lastEventId })
       .where('id', '=', profileId);
   }
@@ -90,7 +90,8 @@ export class DatabaseService  /* implements OnModuleDestroy */ {
       )
       .digest('hex');
     const timestamp = new Date(event.timestamp).valueOf() / 1000;
-    await this.knex.table('events')
+    await this.knex
+      .table('events')
       .insert({
         id,
         timestamp,

@@ -60,10 +60,14 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   private async poll() {
     if (this.amqpChannel?.consume && this.messageHandler) {
       try {
-        this.amqpChannel.consume(this.incomingLogQueue, async (message: any) => {
-          await this.messageHandler(JSON.parse(message.content.toString()));
-          this.amqpChannel.ack(message);
-        }, { noAck: false });
+        this.amqpChannel.consume(
+          this.incomingLogQueue,
+          async (message: any) => {
+            await this.messageHandler(JSON.parse(message.content.toString()));
+            this.amqpChannel.ack(message);
+          },
+          { noAck: false },
+        );
       } catch (err) {
         console.error('error on message handling', err);
       }

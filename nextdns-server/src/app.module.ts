@@ -37,7 +37,6 @@ import { KnexModule } from 'nestjs-knex';
                 password: configService.get<string>('MARIADB_PASSWORD'),
               },
             }),
-
           },
         };
       },
