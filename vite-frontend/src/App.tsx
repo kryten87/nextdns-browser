@@ -1,9 +1,17 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import './App.css';
+import { Profile } from './lib/types';
+import { getProfiles } from './lib/api';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const [profiles, setProfiles] = useState([] as Profile[]);
+
+  getProfiles().then((result) => {
+    console.log('... get profiles', result);
+    setProfiles(result);
+  });
 
   return (
     <div className="App">
@@ -27,6 +35,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <div>
+        <pre>{ JSON.stringify(profiles, null, 2) }</pre>
+      </div>
     </div>
   )
 }
