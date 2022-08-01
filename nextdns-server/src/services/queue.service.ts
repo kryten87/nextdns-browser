@@ -37,6 +37,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.amqpChannel.prefetch(10);
 
     this.poll();
+    this.reportQueueCount();
   }
 
   async onModuleDestroy() {
@@ -55,6 +56,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   async onLogQueueMessage(handler: any) {
     this.messageHandler = handler;
+  }
+
+  private async reportQueueCount() {
+    if (this.amqpChannel?.checkQueue) {
+      const result = await this.amqpChannel.checkQueue(this.incomingLogQueue);
+      console.log('Queue count:', result?.messageCount);
+    }
+    await pause(5000);
+    this.reportQueueCount();
   }
 
   private async poll() {
