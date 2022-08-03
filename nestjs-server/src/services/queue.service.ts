@@ -18,6 +18,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   private amqpConnection: amqp.Connection;
   private amqpChannel: any;
   private messageHandler: any;
+  private handleCount = 0;
 
   constructor(
     private readonly config: ConfigService,
@@ -34,7 +35,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.amqpConnection = await this.amqpLib.connect(this.rabbitUrl);
     this.amqpChannel = await this.amqpConnection.createChannel();
     await this.amqpChannel.assertQueue(this.incomingLogQueue);
-    this.amqpChannel.prefetch(10);
+    this.amqpChannel.prefetch(1);
 
     this.poll();
     this.reportQueueCount();
@@ -58,10 +59,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.messageHandler = handler;
   }
 
-  private async reportQueueCount() {
+  private async getQueueCount(): Promise<number | void> {
     if (this.amqpChannel?.checkQueue) {
       const result = await this.amqpChannel.checkQueue(this.incomingLogQueue);
-      console.log('Queue count:', result?.messageCount);
+      return result?.messageCount;
+    }
+  }
+
+  private async reportQueueCount() {
+    const count = await this.getQueueCount();
+    if (count || count === 0) {
+      console.log('Queue count:', count);
     }
     await pause(5000);
     this.reportQueueCount();
@@ -74,6 +82,10 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           this.incomingLogQueue,
           async (message: any) => {
             await this.messageHandler(JSON.parse(message.content.toString()));
+            if (this.handleCount++ > 500) {
+              await pause(2000);
+              this.handleCount = 0;
+            }
             this.amqpChannel.ack(message);
           },
           { noAck: false },
