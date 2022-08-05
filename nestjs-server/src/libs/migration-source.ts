@@ -6,6 +6,7 @@ export class MigrationSource {
       '20220627211021-initial-table-creation',
       '20220702074000-add-profile-role',
       '20220707093800-add-profile-lasteventid',
+      '20220805101700-add-event-autoincrement-key',
     ]);
   }
 
@@ -15,6 +16,7 @@ export class MigrationSource {
 
   getMigration(migration: string): any {
     switch (migration) {
+
       case '20220627211021-initial-table-creation':
         return {
           async up(knex: Knex): Promise<void> {
@@ -82,6 +84,65 @@ export class MigrationSource {
             await knex.schema.alterTable('profiles', (table) => {
               table.dropColumn('lastEventId');
             });
+          },
+        };
+
+      case '20220805101700-add-event-autoincrement-key':
+        return {
+          async up(knex: Knex): Promise<void> {
+            const tempTableName = `temp_${Date.now()}`;
+
+            // create temp table for events
+            await knex.schema.createTable(tempTableName, (table) => {
+              table.increments('id');
+              table.string('hash').notNullable().unique();
+              table.string('profileId').notNullable().index();
+              table.double('timestamp').notNullable().index();
+              table.string('domain').nullable();
+              table.string('root').nullable();
+              table.string('tracker').nullable();
+              table.boolean('encrypted').nullable();
+              table.string('protocol').nullable();
+              table.string('clientIp').nullable();
+              table.string('client').nullable();
+              table.string('deviceId').notNullable().index();
+              table.string('status').notNullable().index();
+              table.text('reasons').nullable();
+            });
+
+            // copy events data in ordered fashion
+            await knex.raw(`
+              INSERT INTO ${tempTableName}
+              SELECT
+                NULL AS id,
+                id AS hash,
+                profileId,
+                timestamp,
+                domain,
+                root,
+                tracker,
+                encrypted,
+                protocol,
+                clientIp,
+                client,
+                deviceId,
+                status,
+                reasons
+              FROM events
+              ORDER BY timestamp ASC;
+            `);
+
+            // remove events table
+            await knex.schema.dropTable('events');
+
+            // rename temp table to events table
+            await knex.schema.renameTable(tempTableName, 'events');
+          },
+
+          async down(knex: Knex): Promise<void> {
+            // alter table to remove id column
+            // rename hash column as id column
+            // make id column primary
           },
         };
     }
