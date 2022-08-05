@@ -81,7 +81,7 @@ export class DatabaseService {
   }
 
   async insertEvent(event: RawEvent): Promise<string> {
-    const id = crypto
+    const hash = crypto
       .createHash('md5')
       .update(
         [event.timestamp, event.domain, event.clientIp, event.device?.name]
@@ -93,7 +93,8 @@ export class DatabaseService {
     await this.knex
       .table('events')
       .insert({
-        id,
+        id: null,
+        hash,
         timestamp,
         profileId: event.profileId,
         domain: event.domain,
@@ -112,7 +113,7 @@ export class DatabaseService {
       .onConflict()
       .ignore();
     await this.insertDevice(event.device);
-    return id;
+    return hash;
   }
 
   async getDevices(): Promise<Device[]> {
