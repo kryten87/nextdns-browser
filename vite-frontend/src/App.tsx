@@ -1,45 +1,73 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import './App.css';
-import { Profile } from './lib/types';
-import { getProfiles } from './lib/api';
+import '@picocss/pico/css/pico.min.css';
+import { Profile, Event } from './lib/types';
+import { getProfiles, getEvents } from './lib/api';
+import { format } from 'date-fns';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [selectedProfile, setSelectedProfile] = useState(null as string | null);
   const [profiles, setProfiles] = useState([] as Profile[]);
+  const [events, setEvents] = useState([] as Event[]);
 
-  getProfiles().then((result) => {
-    console.log('... get profiles', result);
-    setProfiles(result);
-  });
+  if (profiles.length === 0) {
+    getProfiles().then((result) => {
+      setProfiles(result);
+    });
+  }
+
+  const onChangeSelectedProfile = async (event) => {
+    setSelectedProfile(event.currentTarget.value);
+    if (event.currentTarget.value) {
+      setEvents(await getEvents(event.currentTarget.value));
+    }
+  };
 
   return (
-    <div className="App">
+    <div>
+      <form>
+        <select id="profile" value={ selectedProfile || '' } onChange={ onChangeSelectedProfile }>
+          { !selectedProfile && (
+            <option value="" selected>Select a profile</option>
+          )}
+          {profiles.map((profile) => (
+            <option value={ profile.id }>{ profile.name }</option>
+          ))}
+        </select>
+      </form>
+      { events.length ? (
+        <div>
+          <table role="grid">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Domain</th>
+                <th>Device</th>
+                <th>Status</th>
+                <th>Reasons</th>
+              </tr>
+            </thead>
+            <tbody>
+              { events.map((event) => (
+                <tr id={ event.id } >
+                  <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }</td>
+                  <td>{ event.domain }</td>
+                  <td>{ event.name || event.localIp }</td>
+                  <td>{ event.status }</td>
+                  <td>{ event.reasons }</td>
+                </tr>
+              )) }
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div>No events found.</div>
+      ) }
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      <div>
-        <pre>{ JSON.stringify(profiles, null, 2) }</pre>
+        <pre>{ selectedProfile }</pre>
+        <pre>{ JSON.stringify(events, null, 2) }</pre>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
