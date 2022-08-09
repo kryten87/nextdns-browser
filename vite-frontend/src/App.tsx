@@ -4,11 +4,19 @@ import { Profile } from './lib/types';
 import { getProfiles, getEvents } from './lib/api';
 import { format } from 'date-fns';
 import { SearchParameters, EventResponse } from './lib/api.types';
+import { Watch } from 'react-loader-spinner';
+
+enum StatusValues {
+  default = 'default',
+  blocked = 'blocked',
+  both = 'both',
+};
 
 function App() {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null as string | null);
   const [profiles, setProfiles] = useState([] as Profile[]);
+  const [statusValues, setStatusValues] = useState(StatusValues.both);
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([] as EventResponse[]);
 
@@ -18,10 +26,15 @@ function App() {
     });
   }
 
-  const executeSearch = async (params: SearchParameters) => {
+  const executeSearch = async (params: Partial<SearchParameters> = {}) => {
     setIsSearching(true);
     setEvents([]);
-    const { events } = await getEvents(params);
+    const { events } = await getEvents({
+      profileId: selectedProfile || '',
+      search,
+      status: statusValues !== StatusValues.both ? statusValues : undefined,
+      ...params,
+    });
     setEvents(events);
     setIsSearching(false);
   };
@@ -37,12 +50,16 @@ function App() {
     });
   };
 
+  const onClickStatusValue = async (event) => {
+    setStatusValues(event.currentTarget.value);
+  };
+
   const onChangeSearch = async (event) => {
     setSearch(event.currentTarget.value);
   };
 
   const onClickSearch = async () => {
-    await executeSearch({ profileId: selectedProfile || '', search });
+    await executeSearch();
   };
 
   return (
@@ -58,6 +75,22 @@ function App() {
             ))}
           </select>
         </div>
+
+        <fieldset>
+          <legend>Status</legend>
+          <label htmlFor="default">
+            <input type="radio" id="default" name="size" value="default" disabled={ isSearching } checked={ statusValues === StatusValues.default } onClick={ onClickStatusValue } />
+            Unblocked
+          </label>
+          <label htmlFor="blocked">
+            <input type="radio" id="blocked" name="size" value="blocked" disabled={ isSearching } checked={ statusValues === StatusValues.blocked } onClick={ onClickStatusValue } />
+            Blocked
+          </label>
+          <label htmlFor="both">
+            <input type="radio" id="both" name="size" value="both" disabled={ isSearching } checked={ statusValues === StatusValues.both } onClick={ onClickStatusValue } />
+            Both
+          </label>
+        </fieldset>
 
         <input value={ search } disabled={ isSearching } onChange={ onChangeSearch } />
 
