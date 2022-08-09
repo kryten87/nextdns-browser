@@ -1,4 +1,4 @@
-import { SearchResponse } from './api.types';
+import { SearchParameters, SearchResponse } from './api.types';
 
 // @TODO clean up types
 import { Profile, Event, ReportParameters, LogResults } from './types';
@@ -15,9 +15,13 @@ export const getProfiles = async (): Promise<Profile[]> => {
   return result.json();
 };
 
-export const getEvents = async (profileId: string): Promise<SearchResponse> => {
+export const getEvents = async (
+  parameters: SearchParameters,
+): Promise<SearchResponse> => {
   // @TODO add pagination
-  const url = `${baseUrl}/events?profileId=${profileId}`;
+  const url = `${baseUrl}/events?${new URLSearchParams(
+    parameters as unknown as { [key: string]: string },
+  ).toString()}`;
   const result = await fetch(url);
   const data = await result.json();
   return data;
