@@ -15,7 +15,9 @@ export const getProfiles = async (): Promise<Profile[]> => {
   return result.json();
 };
 
-const stripUndefinedProperties = (obj: { [key: string]: string | number | undefined | null }): { [key: string]: string } => {
+const stripUndefinedProperties = (obj: {
+  [key: string]: string | number | undefined | null;
+}): { [key: string]: string } => {
   const result = { ...obj };
   Object.keys(result).forEach((key) => {
     if (!result[key] && result[key] !== 0) {
@@ -29,7 +31,9 @@ export const getEvents = async (
   parameters: SearchParameters,
 ): Promise<SearchResponse> => {
   // @TODO add pagination
-  const params: { [key: string]: string } = stripUndefinedProperties({ ...parameters });
+  const params: { [key: string]: string } = stripUndefinedProperties({
+    ...parameters,
+  });
   const url = `${baseUrl}/events?${new URLSearchParams(params).toString()}`;
   const result = await fetch(url);
   const data = await result.json();
