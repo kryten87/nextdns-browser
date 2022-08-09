@@ -3,11 +3,12 @@ import '@picocss/pico/css/pico.min.css';
 import { Profile, Event } from './lib/types';
 import { getProfiles, getEvents } from './lib/api';
 import { format } from 'date-fns';
+import { EventResponse } from './lib/api.types';
 
 function App() {
   const [selectedProfile, setSelectedProfile] = useState(null as string | null);
   const [profiles, setProfiles] = useState([] as Profile[]);
-  const [events, setEvents] = useState([] as Event[]);
+  const [events, setEvents] = useState([] as EventResponse[]);
 
   if (profiles.length === 0) {
     getProfiles().then((result) => {
@@ -18,7 +19,8 @@ function App() {
   const onChangeSelectedProfile = async (event) => {
     setSelectedProfile(event.currentTarget.value);
     if (event.currentTarget.value) {
-      setEvents(await getEvents(event.currentTarget.value));
+      const { events } = await getEvents(event.currentTarget.value);
+      setEvents(events);
     }
   };
 
