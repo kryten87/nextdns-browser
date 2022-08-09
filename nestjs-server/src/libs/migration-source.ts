@@ -7,6 +7,8 @@ export class MigrationSource {
       '20220702074000-add-profile-role',
       '20220707093800-add-profile-lasteventid',
       '20220805101700-add-event-autoincrement-key',
+      '20220809122200-id-column-changes',
+      '20220809123600-index-device-localIp',
     ]);
   }
 
@@ -16,7 +18,6 @@ export class MigrationSource {
 
   getMigration(migration: string): any {
     switch (migration) {
-
       case '20220627211021-initial-table-creation':
         return {
           async up(knex: Knex): Promise<void> {
@@ -143,6 +144,48 @@ export class MigrationSource {
             // alter table to remove id column
             // rename hash column as id column
             // make id column primary
+          },
+        };
+
+      case '20220809122200-id-column-changes':
+        return {
+          async up(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.renameColumn('id', 'deviceId');
+            });
+            await knex.schema.alterTable('events', (table) => {
+              table.renameColumn('id', 'eventId');
+            });
+            await knex.schema.alterTable('profiles', (table) => {
+              table.renameColumn('id', 'profileId');
+            });
+          },
+
+          async down(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.renameColumn('deviceId', 'id');
+            });
+            await knex.schema.alterTable('events', (table) => {
+              table.renameColumn('eventId', 'id');
+            });
+            await knex.schema.alterTable('profiles', (table) => {
+              table.renameColumn('profileId', 'id');
+            });
+          },
+        };
+
+      case '20220809123600-index-device-localIp':
+        return {
+          async up(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.index('localIp');
+            });
+          },
+
+          async down(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.dropIndex('localIp');
+            });
           },
         };
     }

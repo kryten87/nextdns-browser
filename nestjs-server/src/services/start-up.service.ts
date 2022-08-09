@@ -19,7 +19,13 @@ export class StartUpService implements OnModuleInit {
   async updateProfiles(): Promise<void> {
     const profiles = await this.nextDnsApiService.getProfiles();
     await Promise.all(
-      profiles.map((profile) => this.databaseService.insertProfile(profile)),
+      profiles
+        .map((profile) => {
+          const values = { ...profile, profileId: profile.id };
+          delete values.id;
+          return values;
+        })
+        .map((profile) => this.databaseService.insertProfile(profile)),
     );
   }
 }

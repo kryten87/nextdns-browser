@@ -5,7 +5,7 @@ export interface ReportParameters {
 export type PartialReportParameters = Partial<ReportParameters>;
 
 export interface Profile {
-  id: string;
+  profileId: string;
   fingerprint?: string;
   name: string;
 }
