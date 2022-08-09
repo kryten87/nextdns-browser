@@ -14,7 +14,8 @@
   "dependencies": {
     "date-fns": "^2.29.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-loader-spinner": "^5.1.7-beta.1"
   },
   "devDependencies": {
     "@picocss/pico": "^1.5.3",
