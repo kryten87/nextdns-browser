@@ -3,6 +3,9 @@ import { MigrationSource } from '../libs/migration-source';
 import * as crypto from 'crypto';
 import { InjectKnex, Knex } from 'nestjs-knex';
 import { SearchParameters } from '../api.types';
+import knex from 'knex';
+
+const PAGE_SIZE = 20;
 
 export interface Profile {
   id: string;
@@ -125,17 +128,13 @@ export class DatabaseService {
     return this.knex.table('profiles').select();
   }
 
-  async getEvents(query: SearchParameters) {
-    const { profileId, deviceId, status, search } = query;
-    let baseQuery = this.knex
-      .table('events')
-      .join('devices', 'events.deviceId', '=', 'devices.deviceId')
-      .where('profileId', '=', profileId)
-      .orderBy('timestamp', 'DESC')
-      .limit(50);
+  private buildQuery(query: any, params: SearchParameters): any {
+    let result = query;
+    const { profileId, deviceId, status, search, cursor } = params;
+    result = result.where('profileId', '=', profileId);
 
     if (deviceId) {
-      baseQuery = baseQuery.where((builder) => {
+      result = result.where((builder) => {
         builder
           .where('deviceId', '=', deviceId)
           .orWhere('localIp', '=', deviceId);
@@ -143,11 +142,11 @@ export class DatabaseService {
     }
 
     if (status) {
-      baseQuery = baseQuery.where('status', '=', status);
+      result = result.where('status', '=', status);
     }
 
     if (search) {
-      baseQuery = baseQuery.where((builder) => {
+      result = result.where((builder) => {
         builder
           .whereILike('domain', `%${search}%`)
           .orWhereILike('root', `%${search}%`)
@@ -156,6 +155,31 @@ export class DatabaseService {
       });
     }
 
+    if (cursor) {
+      result = result.where('eventId', '<', cursor);
+    }
+
+    return result;
+  }
+
+  async getEvents(params: SearchParameters) {
+    let baseQuery = this.knex
+      .table('events')
+      .join('devices', 'events.deviceId', '=', 'devices.deviceId')
+      .orderBy('timestamp', 'DESC')
+      .limit(PAGE_SIZE);
+    baseQuery = this.buildQuery(baseQuery, params);
     return baseQuery;
+  }
+
+  async getEventCount(params: SearchParameters) {
+    const results = await this.buildQuery(
+      this.knex
+        .table('events')
+        .join('devices', 'events.deviceId', '=', 'devices.deviceId')
+        .count('eventId', { as: 'count' }),
+      params,
+    );
+    return results[0].count;
   }
 }
