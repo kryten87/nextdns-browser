@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import '@picocss/pico/css/pico.min.css';
-import { Profile, Event } from './lib/types';
+import { Profile } from './lib/types';
 import { getProfiles, getEvents } from './lib/api';
 import { format } from 'date-fns';
 import { EventResponse } from './lib/api.types';
