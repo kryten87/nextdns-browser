@@ -1,6 +1,6 @@
 export interface ReportParameters {
   profileId: string;
-};
+}
 
 export type PartialReportParameters = Partial<ReportParameters>;
 
@@ -8,9 +8,9 @@ export interface Profile {
   id: string;
   fingerprint?: string;
   name: string;
-};
+}
 
-export interface DNSRequest {
+export interface Event {
   timestamp: string;
   domain: string;
   root: string;
@@ -27,7 +27,7 @@ export interface DNSRequest {
   };
   status: string;
   reasons: string[];
-};
+}
 
 export interface ResultMetadata {
   pagination: {
@@ -36,9 +36,9 @@ export interface ResultMetadata {
   stream: {
     id: string;
   };
-};
+}
 
 export interface LogResults {
-  data: DNSRequest[];
+  data: Event[];
   meta: ResultMetadata;
-};
+}
