@@ -12,6 +12,7 @@ export interface SearchParameters {
   deviceId?: string;
   status?: string;
   search?: string;
+  cursor?: number | null;
 }
 
 export interface EventResponse {
@@ -37,4 +38,5 @@ export interface EventResponse {
 export interface SearchResponse {
   cursor: number;
   events: EventResponse[];
+  count?: number;
 }

@@ -29,10 +29,12 @@ const stripUndefinedProperties = (obj: {
 
 export const getEvents = async (
   parameters: SearchParameters,
+  cursor: number | null,
 ): Promise<SearchResponse> => {
   // @TODO add pagination
   const params: { [key: string]: string } = stripUndefinedProperties({
     ...parameters,
+    cursor,
   });
   const url = `${baseUrl}/events?${new URLSearchParams(params).toString()}`;
   const result = await fetch(url);
