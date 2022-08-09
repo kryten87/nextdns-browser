@@ -3,7 +3,7 @@ import '@picocss/pico/css/pico.min.css';
 import { Profile } from './lib/types';
 import { getProfiles, getEvents } from './lib/api';
 import { format } from 'date-fns';
-import { SearchParameters, EventResponse } from './lib/api.types';
+import { SearchParameters, EventResponse, SearchResponse } from './lib/api.types';
 import { Watch } from 'react-loader-spinner';
 
 enum StatusValues {
@@ -19,6 +19,8 @@ function App() {
   const [statusValues, setStatusValues] = useState(StatusValues.both);
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([] as EventResponse[]);
+  const [cursor, setCursor] = useState(null as number | null);
+  const [count, setCount] = useState(0);
 
   if (profiles.length === 0) {
     getProfiles().then((result) => {
@@ -26,16 +28,24 @@ function App() {
     });
   }
 
-  const executeSearch = async (params: Partial<SearchParameters> = {}) => {
+  const executeSearch = async (params: Partial<SearchParameters> = {}, cursorValue: number | null = null) => {
     setIsSearching(true);
-    setEvents([]);
-    const { events } = await getEvents({
+    if (!cursorValue) {
+      setEvents([]);
+    }
+    const results = await getEvents({
       profileId: selectedProfile || '',
       search,
       status: statusValues !== StatusValues.both ? statusValues : undefined,
       ...params,
-    });
-    setEvents(events);
+    }, cursorValue);
+    if (!cursorValue) {
+      setEvents(results.events);
+    } else {
+      setEvents([...events, ...results.events]);
+    }
+    setCursor(results.cursor);
+    setCount(results.count || 0);
     setIsSearching(false);
   };
 
@@ -60,6 +70,10 @@ function App() {
 
   const onClickSearch = async () => {
     await executeSearch();
+  };
+
+  const onClickMore = async () => {
+    await executeSearch({}, cursor);
   };
 
   return (
@@ -96,18 +110,6 @@ function App() {
 
         <button role="button" disabled={ isSearching } onClick={ onClickSearch }>Search</button>
       </form>
-      { isSearching && (
-        <Watch
-          height="80"
-          width="80"
-          radius="48"
-          color="#4fa94d"
-          ariaLabel="watch-loading"
-          wrapperStyle={{}}
-          wrapperClassName=""
-          visible={true}
-        />
-      ) }
       { events.length ? (
         <div>
           <table role="grid">
@@ -123,7 +125,7 @@ function App() {
             <tbody>
               { events.map((event) => (
                 <tr key={ event.hash } >
-                  <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }</td>
+                  <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }<br />{ event.eventId }</td>
                   <td>{ event.domain }</td>
                   <td>{ event.name || event.localIp }</td>
                   <td>{ event.status }</td>
@@ -132,9 +134,23 @@ function App() {
               )) }
             </tbody>
           </table>
+
+          <button role="button" disabled = { isSearching || events.length >= count } onClick={ onClickMore }>More</button>
         </div>
       ) : (
         <div>No events found.</div>
+      ) }
+      { isSearching && (
+        <Watch
+          height="80"
+          width="80"
+          radius="48"
+          color="#4fa94d"
+          ariaLabel="watch-loading"
+          wrapperStyle={{}}
+          wrapperClassName=""
+          visible={true}
+        />
       ) }
       <div>
         <pre>{ selectedProfile }</pre>
