@@ -1,13 +1,21 @@
-import { Profile, ReportParameters, LogResults } from './types';
+import { Profile, Event, ReportParameters, LogResults } from './types';
 
 const baseUrl = 'http://localhost:3000/api';
 
-const pause = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration));
+const pause = (duration: number) =>
+  new Promise((resolve) => setTimeout(resolve, duration));
 
 export const getProfiles = async (): Promise<Profile[]> => {
   // @TODO add pagination
   const url = `${baseUrl}/profiles`;
   const result = await fetch(url);
-  const body = await result.json();
-  return body.data;
+  return result.json();
+};
+
+export const getEvents = async (profileId: string): Promise<Event[]> => {
+  // @TODO add pagination
+  const url = `${baseUrl}/events?profileId=${profileId}`;
+  const result = await fetch(url);
+  const events = await result.json();
+  return events;
 };
