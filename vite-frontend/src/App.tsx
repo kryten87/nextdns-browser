@@ -30,7 +30,7 @@ function App() {
             <option value="" selected>Select a profile</option>
           )}
           {profiles.map((profile) => (
-            <option value={ profile.id }>{ profile.name }</option>
+            <option value={ profile.profileId }>{ profile.name }</option>
           ))}
         </select>
       </form>

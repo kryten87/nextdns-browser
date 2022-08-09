@@ -129,24 +129,7 @@ export class DatabaseService {
     const { profileId, deviceId, status, search } = query;
     let baseQuery = this.knex
       .table('events')
-      .column({
-        eventId: 'events.id',
-        hash: 'hash',
-        profileId: 'profileId',
-        timestamp: 'timestamp',
-        domain: 'domain',
-        root: 'root',
-        tracker: 'tracker',
-        encrypted: 'encrypted',
-        protocol: 'protocol',
-        clientIp: 'clientIp',
-        client: 'client',
-        deviceId: 'deviceId',
-        status: 'status',
-        reasons: 'reasons',
-      })
-      .select()
-      .join('devices', 'events.deviceId', '=', 'devices.id')
+      .join('devices', 'events.deviceId', '=', 'devices.deviceId')
       .where('profileId', '=', profileId)
       .orderBy('timestamp', 'DESC')
       .limit(50);
