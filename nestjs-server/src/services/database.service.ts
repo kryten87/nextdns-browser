@@ -123,4 +123,13 @@ export class DatabaseService {
   async getProfiles(): Promise<Profile[]> {
     return this.knex.table('profiles').select();
   }
+
+  async getEvents(profileId: string) {
+    return this.knex.table('events')
+      .select()
+      .join('devices', 'events.deviceId', '=', 'devices.id')
+      .where('profileId', '=', profileId)
+      .orderBy('timestamp', 'DESC')
+      .limit(50);
+  }
 }
