@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { DatabaseService } from './services/database.service';
 
 @Controller('api')
@@ -18,8 +18,10 @@ export class ApiController {
     return devices;
   }
 
-  @Get('report')
-  async getReport() {
-    return [];
+  @Get('events')
+  async getEvents(@Query('profileId') profileId: string) {
+    // @TODO pagination
+    const events = await this.db.getEvents(profileId);
+    return events;
   }
 }
