@@ -8,6 +8,7 @@ export class MigrationSource {
       '20220707093800-add-profile-lasteventid',
       '20220805101700-add-event-autoincrement-key',
       '20220809122200-id-column-changes',
+      '20220809123600-index-device-localIp',
     ]);
   }
 
@@ -169,6 +170,21 @@ export class MigrationSource {
             });
             await knex.schema.alterTable('profiles', (table) => {
               table.renameColumn('profileId', 'id');
+            });
+          },
+        };
+
+      case '20220809123600-index-device-localIp':
+        return {
+          async up(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.index('localIp');
+            });
+          },
+
+          async down(knex: Knex): Promise<void> {
+            await knex.schema.alterTable('devices', (table) => {
+              table.dropIndex('localIp');
             });
           },
         };
