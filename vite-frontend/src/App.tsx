@@ -152,11 +152,6 @@ function App() {
           visible={true}
         />
       ) }
-      <div>
-        <pre>{ selectedProfile }</pre>
-        <pre>{ search }</pre>
-        <pre>{ JSON.stringify(events, null, 2) }</pre>
-      </div>
     </div>
   );
 }
