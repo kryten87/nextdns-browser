@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { MigrationSource } from '../libs/migration-source';
 import * as crypto from 'crypto';
 import { InjectKnex, Knex } from 'nestjs-knex';
+import { SearchParameters } from '../api.types';
+import knex from 'knex';
+
+const PAGE_SIZE = 20;
 
 export interface Profile {
   id: string;
@@ -81,7 +85,7 @@ export class DatabaseService {
   }
 
   async insertEvent(event: RawEvent): Promise<string> {
-    const id = crypto
+    const hash = crypto
       .createHash('md5')
       .update(
         [event.timestamp, event.domain, event.clientIp, event.device?.name]
@@ -93,7 +97,8 @@ export class DatabaseService {
     await this.knex
       .table('events')
       .insert({
-        id,
+        id: null,
+        hash,
         timestamp,
         profileId: event.profileId,
         domain: event.domain,
@@ -112,7 +117,7 @@ export class DatabaseService {
       .onConflict()
       .ignore();
     await this.insertDevice(event.device);
-    return id;
+    return hash;
   }
 
   async getDevices(): Promise<Device[]> {
@@ -121,5 +126,60 @@ export class DatabaseService {
 
   async getProfiles(): Promise<Profile[]> {
     return this.knex.table('profiles').select();
+  }
+
+  private buildQuery(query: any, params: SearchParameters): any {
+    let result = query;
+    const { profileId, deviceId, status, search, cursor } = params;
+    result = result.where('profileId', '=', profileId);
+
+    if (deviceId) {
+      result = result.where((builder) => {
+        builder
+          .where('deviceId', '=', deviceId)
+          .orWhere('localIp', '=', deviceId);
+      });
+    }
+
+    if (status) {
+      result = result.where('status', '=', status);
+    }
+
+    if (search) {
+      result = result.where((builder) => {
+        builder
+          .whereILike('domain', `%${search}%`)
+          .orWhereILike('root', `%${search}%`)
+          .orWhereILike('name', `%${search}%`)
+          .orWhereILike('reasons', `%${search}%`);
+      });
+    }
+
+    if (cursor) {
+      result = result.where('eventId', '<', cursor);
+    }
+
+    return result;
+  }
+
+  async getEvents(params: SearchParameters) {
+    let baseQuery = this.knex
+      .table('events')
+      .join('devices', 'events.deviceId', '=', 'devices.deviceId')
+      .orderBy('timestamp', 'DESC')
+      .limit(PAGE_SIZE);
+    baseQuery = this.buildQuery(baseQuery, params);
+    return baseQuery;
+  }
+
+  async getEventCount(params: SearchParameters) {
+    const results = await this.buildQuery(
+      this.knex
+        .table('events')
+        .join('devices', 'events.deviceId', '=', 'devices.deviceId')
+        .count('eventId', { as: 'count' }),
+      params,
+    );
+    return results[0].count;
   }
 }
