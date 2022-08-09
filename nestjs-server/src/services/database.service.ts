@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MigrationSource } from '../libs/migration-source';
 import * as crypto from 'crypto';
 import { InjectKnex, Knex } from 'nestjs-knex';
+import { SearchParameters } from '../api.types';
 
 export interface Profile {
   id: string;
@@ -124,12 +125,54 @@ export class DatabaseService {
     return this.knex.table('profiles').select();
   }
 
-  async getEvents(profileId: string) {
-    return this.knex.table('events')
+  async getEvents(query: SearchParameters) {
+    const { profileId, deviceId, status, search } = query;
+    let baseQuery = this.knex
+      .table('events')
+      .column({
+        eventId: 'events.id',
+        hash: 'hash',
+        profileId: 'profileId',
+        timestamp: 'timestamp',
+        domain: 'domain',
+        root: 'root',
+        tracker: 'tracker',
+        encrypted: 'encrypted',
+        protocol: 'protocol',
+        clientIp: 'clientIp',
+        client: 'client',
+        deviceId: 'deviceId',
+        status: 'status',
+        reasons: 'reasons',
+      })
       .select()
       .join('devices', 'events.deviceId', '=', 'devices.id')
       .where('profileId', '=', profileId)
       .orderBy('timestamp', 'DESC')
       .limit(50);
+
+    if (deviceId) {
+      baseQuery = baseQuery.where((builder) => {
+        builder
+          .where('deviceId', '=', deviceId)
+          .orWhere('localIp', '=', deviceId);
+      });
+    }
+
+    if (status) {
+      baseQuery = baseQuery.where('status', '=', status);
+    }
+
+    if (search) {
+      baseQuery = baseQuery.where((builder) => {
+        builder
+          .whereILike('domain', `%${search}%`)
+          .orWhereILike('root', `%${search}%`)
+          .orWhereILike('name', `%${search}%`)
+          .orWhereILike('reasons', `%${search}%`);
+      });
+    }
+
+    return baseQuery;
   }
 }
