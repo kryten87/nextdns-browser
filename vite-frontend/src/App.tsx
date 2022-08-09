@@ -27,10 +27,10 @@ function App() {
       <form>
         <select id="profile" value={ selectedProfile || '' } onChange={ onChangeSelectedProfile }>
           { !selectedProfile && (
-            <option value="" selected>Select a profile</option>
+            <option value="">Select a profile</option>
           )}
           {profiles.map((profile) => (
-            <option value={ profile.profileId }>{ profile.name }</option>
+            <option key={ profile.profileId } value={ profile.profileId }>{ profile.name }</option>
           ))}
         </select>
       </form>
@@ -48,7 +48,7 @@ function App() {
             </thead>
             <tbody>
               { events.map((event) => (
-                <tr id={ event.id } >
+                <tr key={ event.hash } >
                   <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }</td>
                   <td>{ event.domain }</td>
                   <td>{ event.name || event.localIp }</td>
