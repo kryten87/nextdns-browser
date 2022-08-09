@@ -63,6 +63,18 @@ function App() {
 
         <button role="button" disabled={ isSearching } onClick={ onClickSearch }>Search</button>
       </form>
+      { isSearching && (
+        <Watch
+          height="80"
+          width="80"
+          radius="48"
+          color="#4fa94d"
+          ariaLabel="watch-loading"
+          wrapperStyle={{}}
+          wrapperClassName=""
+          visible={true}
+        />
+      ) }
       { events.length ? (
         <div>
           <table role="grid">
