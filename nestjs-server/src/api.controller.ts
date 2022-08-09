@@ -1,5 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { DatabaseService } from './services/database.service';
+import { SearchParameters } from './api.types';
 
 @Controller('api')
 export class ApiController {
@@ -19,9 +20,9 @@ export class ApiController {
   }
 
   @Get('events')
-  async getEvents(@Query('profileId') profileId: string) {
+  async getEvents(@Query() search: SearchParameters) {
     // @TODO pagination
-    const events = await this.db.getEvents(profileId);
+    const events = await this.db.getEvents(search);
     return events;
   }
 }

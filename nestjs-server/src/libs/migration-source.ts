@@ -16,7 +16,6 @@ export class MigrationSource {
 
   getMigration(migration: string): any {
     switch (migration) {
-
       case '20220627211021-initial-table-creation':
         return {
           async up(knex: Knex): Promise<void> {
