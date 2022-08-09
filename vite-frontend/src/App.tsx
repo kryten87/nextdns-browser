@@ -3,11 +3,13 @@ import '@picocss/pico/css/pico.min.css';
 import { Profile } from './lib/types';
 import { getProfiles, getEvents } from './lib/api';
 import { format } from 'date-fns';
-import { EventResponse } from './lib/api.types';
+import { SearchParameters, EventResponse } from './lib/api.types';
 
 function App() {
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null as string | null);
   const [profiles, setProfiles] = useState([] as Profile[]);
+  const [search, setSearch] = useState("");
   const [events, setEvents] = useState([] as EventResponse[]);
 
   if (profiles.length === 0) {
@@ -16,25 +18,50 @@ function App() {
     });
   }
 
+  const executeSearch = async (params: SearchParameters) => {
+    setIsSearching(true);
+    setEvents([]);
+    const { events } = await getEvents(params);
+    setEvents(events);
+    setIsSearching(false);
+  };
+
   const onChangeSelectedProfile = async (event) => {
-    setSelectedProfile(event.currentTarget.value);
-    if (event.currentTarget.value) {
-      const { events } = await getEvents(event.currentTarget.value);
-      setEvents(events);
+    if (event.currentTarget.value === selectedProfile) {
+      return;
     }
+    setSelectedProfile(event.currentTarget.value);
+    await executeSearch({
+      profileId: event.currentTarget.value,
+      search: search,
+    });
+  };
+
+  const onChangeSearch = async (event) => {
+    setSearch(event.currentTarget.value);
+  };
+
+  const onClickSearch = async () => {
+    await executeSearch({ profileId: selectedProfile || '', search });
   };
 
   return (
     <div>
       <form>
-        <select id="profile" value={ selectedProfile || '' } onChange={ onChangeSelectedProfile }>
-          { !selectedProfile && (
-            <option value="">Select a profile</option>
-          )}
-          {profiles.map((profile) => (
-            <option key={ profile.profileId } value={ profile.profileId }>{ profile.name }</option>
-          ))}
-        </select>
+        <div className="container">
+          <select id="profile" value={ selectedProfile || '' } disabled={ isSearching } onChange={ onChangeSelectedProfile }>
+            { !selectedProfile && (
+              <option value="">Select a profile</option>
+            )}
+            {profiles.map((profile) => (
+              <option key={ profile.profileId } value={ profile.profileId }>{ profile.name }</option>
+            ))}
+          </select>
+        </div>
+
+        <input value={ search } disabled={ isSearching } onChange={ onChangeSearch } />
+
+        <button role="button" disabled={ isSearching } onClick={ onClickSearch }>Search</button>
       </form>
       { events.length ? (
         <div>
@@ -66,6 +93,7 @@ function App() {
       ) }
       <div>
         <pre>{ selectedProfile }</pre>
+        <pre>{ search }</pre>
         <pre>{ JSON.stringify(events, null, 2) }</pre>
       </div>
     </div>
