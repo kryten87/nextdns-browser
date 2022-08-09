@@ -25,6 +25,8 @@ export class ApiController {
   async getEvents(@Query() search: SearchParameters): Promise<SearchResponse> {
     // @TODO pagination
     const events = await this.db.getEvents(search);
-    return { cursor: 0, events };
+    const count = await this.db.getEventCount(search);
+    const cursor = events.length ? events[events.length - 1].eventId : null;
+    return { cursor, events, count };
   }
 }
