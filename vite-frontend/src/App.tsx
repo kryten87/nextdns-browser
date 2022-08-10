@@ -141,9 +141,7 @@ function App() {
             </tbody>
           </table>
 
-          <button role="button" disabled = { isSearching } onClick={ onClickMore }>
-            More
-          </button>
+          <button role="button" disabled = { isSearching } onClick={ onClickMore }>More</button>
         </div>
       ) : (
         isSearching ? null : <div>No events found.</div>
