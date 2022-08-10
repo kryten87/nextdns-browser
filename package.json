@@ -1,0 +1,14 @@
+{
+  "name": "nextdns",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Dave Thomas <davet@ifit.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "./scripts/build.server && ./scripts/build.frontend",
+    "dev:up": "docker compose --env-file ./nestjs-server/.env -f docker-compose.dev.yml up",
+    "dev:down": "docker compose --env-file ./nestjs-server/.env -f docker-compose.dev.yml down",
+    "test:up": "docker compose --env-file ./nestjs-server/.env -f docker-compose.test.yml up",
+    "test:down": "docker compose --env-file ./nestjs-server/.env -f docker-compose.test.yml down"
+  }
+}
