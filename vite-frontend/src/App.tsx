@@ -76,10 +76,12 @@ function App() {
     await executeSearch({}, cursor);
   };
 
+  const more = count ? count - events.length : 0;
+
   return (
     <div>
       <form>
-        <div className="container">
+        <div>
           <select id="profile" value={ selectedProfile || '' } disabled={ isSearching } onChange={ onChangeSelectedProfile }>
             { !selectedProfile && (
               <option value="">Select a profile</option>
@@ -90,23 +92,31 @@ function App() {
           </select>
         </div>
 
-        <fieldset>
-          <legend>Status</legend>
-          <label htmlFor="default">
-            <input type="radio" id="default" name="size" value="default" disabled={ isSearching } checked={ statusValues === StatusValues.default } onClick={ onClickStatusValue } />
-            Unblocked
-          </label>
-          <label htmlFor="blocked">
-            <input type="radio" id="blocked" name="size" value="blocked" disabled={ isSearching } checked={ statusValues === StatusValues.blocked } onClick={ onClickStatusValue } />
-            Blocked
-          </label>
-          <label htmlFor="both">
-            <input type="radio" id="both" name="size" value="both" disabled={ isSearching } checked={ statusValues === StatusValues.both } onClick={ onClickStatusValue } />
-            Both
-          </label>
+        <fieldset className="grid">
+          <div>
+            <legend>Status</legend>
+          </div>
+          <div>
+            <label htmlFor="default">
+              <input type="radio" id="default" name="size" value="default" disabled={ isSearching } checked={ statusValues === StatusValues.default } onClick={ onClickStatusValue } />
+              Unblocked
+            </label>
+          </div>
+          <div>
+            <label htmlFor="blocked">
+              <input type="radio" id="blocked" name="size" value="blocked" disabled={ isSearching } checked={ statusValues === StatusValues.blocked } onClick={ onClickStatusValue } />
+              Blocked
+            </label>
+          </div>
+          <div>
+            <label htmlFor="both">
+              <input type="radio" id="both" name="size" value="both" disabled={ isSearching } checked={ statusValues === StatusValues.both } onClick={ onClickStatusValue } />
+              Both
+            </label>
+          </div>
         </fieldset>
 
-        <input value={ search } disabled={ isSearching } onChange={ onChangeSearch } />
+        <input value={ search } disabled={ isSearching } placeholder="Enter search text here" onChange={ onChangeSearch } />
 
         <button role="button" disabled={ isSearching } onClick={ onClickSearch }>Search</button>
       </form>
@@ -135,10 +145,12 @@ function App() {
             </tbody>
           </table>
 
-          <button role="button" disabled = { isSearching || events.length >= count } onClick={ onClickMore }>More</button>
+          <button role="button" disabled = { isSearching || events.length >= count } onClick={ onClickMore }>
+            { more > 0 ? `${more} More Items` : "More" }
+          </button>
         </div>
       ) : (
-        <div>No events found.</div>
+        isSearching ? null : <div>No events found.</div>
       ) }
       { isSearching && (
         <Watch

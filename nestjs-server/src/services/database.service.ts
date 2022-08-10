@@ -180,7 +180,7 @@ export class DatabaseService {
         .table('events')
         .join('devices', 'events.deviceId', '=', 'devices.deviceId')
         .count('eventId', { as: 'count' }),
-      params,
+      { ...params, cursor: undefined },
     );
     return results[0].count;
   }
