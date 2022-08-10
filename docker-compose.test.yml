@@ -1,0 +1,54 @@
+version: "3.2"
+
+services:
+
+  frontend:
+    image: nextdns/frontend:latest
+    ports:
+      - 8888:80
+    depends_on:
+      - app
+
+  app:
+    image: nextdns/server:latest
+    ports:
+      - 3000:3000
+      - 3001:3001
+    environment:
+      - DATABASE_CLIENT=mysql2
+      - MARIADB_HOST=db
+      - MARIADB_PORT=${MARIADB_PORT}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - RABBIT_URL=amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - db
+
+  rabbitmq:
+    image: rabbitmq:3.9.20-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./docker/rabbitmq/log/:/var/log/rabbitmq
+
+  db:
+    image: mariadb:10.6.8
+    environment:
+      - MARIADB_INITDB_SKIP_TZINFO=1
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    volumes:
+     - ./docker/mariadb/data/:/var/lib/mysql/
+    ports:
+      - 3306:3306
+
+  adminer:
+    image: adminer:4.8.1
+    ports:
+      - 8080:8080
