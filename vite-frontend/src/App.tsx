@@ -125,7 +125,7 @@ function App() {
             <tbody>
               { events.map((event) => (
                 <tr key={ event.hash } >
-                  <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }<br />{ event.eventId }</td>
+                  <td>{ format(new Date(event.timestamp * 1000), 'MMM d, yyyy h:mm:ss a') }</td>
                   <td>{ event.domain }</td>
                   <td>{ event.name || event.localIp }</td>
                   <td>{ event.status }</td>
