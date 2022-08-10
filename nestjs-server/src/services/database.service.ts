@@ -175,13 +175,14 @@ export class DatabaseService {
   }
 
   async getEventCount(params: SearchParameters) {
-    const results = await this.buildQuery(
+    const countQuery = this.buildQuery(
       this.knex
         .table('events')
         .join('devices', 'events.deviceId', '=', 'devices.deviceId')
         .count('eventId', { as: 'count' }),
-      { ...params, cursor: undefined },
+      { ...params, cursor: undefined }
     );
+    const results = await countQuery;
     return results[0].count;
   }
 }
