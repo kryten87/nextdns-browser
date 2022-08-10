@@ -51,7 +51,7 @@ export class NextDnsApiService {
 
   initializeEventSource(profile: Profile, handler: any): any {
     const url = [
-      `${this.baseUrl}profiles/${profile.id}/logs/stream`,
+      `${this.baseUrl}profiles/${profile.profileId}/logs/stream`,
       profile.lastEventId && `id=${profile.lastEventId}`,
     ]
       .filter(Boolean)

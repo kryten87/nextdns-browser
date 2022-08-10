@@ -29,7 +29,7 @@ export class AppController implements OnModuleInit {
         this.eventSources.push(
           this.api.initializeEventSource(
             profile,
-            this.createStreamHandler(profile.id),
+            this.createStreamHandler(profile.profileId),
           ),
         );
       });

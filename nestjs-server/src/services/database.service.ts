@@ -8,7 +8,7 @@ import knex from 'knex';
 const PAGE_SIZE = 20;
 
 export interface Profile {
-  id: string;
+  profileId: string;
   fingerprint: string;
   name: string;
   role?: string;
@@ -69,18 +69,20 @@ export class DatabaseService {
 
   async insertProfile(profile: Profile): Promise<string> {
     await this.knex.table('profiles').insert(profile).onConflict().ignore();
-    return profile.id;
+    return profile.profileId;
   }
 
   async setLastEventId(profileId: string, lastEventId: string): Promise<void> {
     await this.knex
       .table('profiles')
       .update({ lastEventId })
-      .where('id', '=', profileId);
+      .where('profileId', '=', profileId);
   }
 
   async insertDevice(device: Device): Promise<string> {
-    await this.knex.table('devices').insert(device).onConflict().ignore();
+    const values = { ...device, deviceId: device.id };
+    delete values.id;
+    await this.knex.table('devices').insert(values).onConflict().ignore();
     return device.id;
   }
 
@@ -97,7 +99,7 @@ export class DatabaseService {
     await this.knex
       .table('events')
       .insert({
-        id: null,
+        eventId: null,
         hash,
         timestamp,
         profileId: event.profileId,
