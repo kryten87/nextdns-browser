@@ -1,6 +1,6 @@
 {
   "name": "nextdns",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "author": "Dave Thomas <davet@ifit.com>",
   "license": "MIT",
