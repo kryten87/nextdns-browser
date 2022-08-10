@@ -1,0 +1,18 @@
+FROM node:16-alpine
+
+RUN apk add yarn
+
+WORKDIR /app
+
+COPY package.json /app/
+COPY yarn.lock /app/
+
+RUN yarn
+
+COPY . .
+
+RUN yarn build
+
+RUN echo -e "sleep 5s\n/usr/local/bin/node /app/dist/main.js\n" >/app/run.sh
+
+CMD ["/bin/sh", "/app/run.sh"]
