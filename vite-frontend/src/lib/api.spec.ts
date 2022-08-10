@@ -1,4 +1,4 @@
-import { getProfileList } from './api';
+import { getProfiles } from './api';
 
 describe('api', () => {
   it('should pass', () => {

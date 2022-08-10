@@ -1,0 +1,9 @@
+FROM nginx:1.23.1-alpine
+
+WORKDIR /usr/share/nginx/html
+
+COPY . .
+
+#RUN sed -i '/        index  index.html index.htm;/line 1\nline 2 \nline 3' /etc/nginx/conf.d/default.conf
+
+RUN sed -i '11i location /api {'\\n'    proxy_pass http://app:3000/api;'\\n'}' /etc/nginx/conf.d/default.conf

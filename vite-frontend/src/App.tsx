@@ -47,7 +47,7 @@ function App() {
     setIsSearching(false);
   };
 
-  const onChangeSelectedProfile = async (event) => {
+  const onChangeSelectedProfile = async (event: any): Promise<void> => {
     if (event.currentTarget.value === selectedProfile) {
       return;
     }
@@ -58,11 +58,11 @@ function App() {
     });
   };
 
-  const onClickStatusValue = async (event) => {
+  const onClickStatusValue = async (event: any): Promise<void> => {
     setStatusValues(event.currentTarget.value);
   };
 
-  const onChangeSearch = async (event) => {
+  const onChangeSearch = async (event: any): Promise<void> => {
     setSearch(event.currentTarget.value);
   };
 
@@ -154,7 +154,6 @@ function App() {
           color="#4fa94d"
           ariaLabel="watch-loading"
           wrapperStyle={{}}
-          wrapperClassName=""
           visible={true}
         />
       ) }
