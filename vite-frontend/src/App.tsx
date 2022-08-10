@@ -20,7 +20,6 @@ function App() {
   const [search, setSearch] = useState("");
   const [events, setEvents] = useState([] as EventResponse[]);
   const [cursor, setCursor] = useState(null as number | null);
-  const [count, setCount] = useState(0);
 
   if (profiles.length === 0) {
     getProfiles().then((result) => {
@@ -45,7 +44,6 @@ function App() {
       setEvents([...events, ...results.events]);
     }
     setCursor(results.cursor);
-    setCount(results.count || 0);
     setIsSearching(false);
   };
 
@@ -75,8 +73,6 @@ function App() {
   const onClickMore = async () => {
     await executeSearch({}, cursor);
   };
-
-  const more = count ? count - events.length : 0;
 
   return (
     <div>
@@ -145,8 +141,8 @@ function App() {
             </tbody>
           </table>
 
-          <button role="button" disabled = { isSearching || events.length >= count } onClick={ onClickMore }>
-            { more > 0 ? `${more} More Items` : "More" }
+          <button role="button" disabled = { isSearching } onClick={ onClickMore }>
+            More
           </button>
         </div>
       ) : (

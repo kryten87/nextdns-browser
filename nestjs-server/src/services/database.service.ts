@@ -173,16 +173,4 @@ export class DatabaseService {
     baseQuery = this.buildQuery(baseQuery, params);
     return baseQuery;
   }
-
-  async getEventCount(params: SearchParameters) {
-    const countQuery = this.buildQuery(
-      this.knex
-        .table('events')
-        .join('devices', 'events.deviceId', '=', 'devices.deviceId')
-        .count('eventId', { as: 'count' }),
-      { ...params, cursor: undefined }
-    );
-    const results = await countQuery;
-    return results[0].count;
-  }
 }
