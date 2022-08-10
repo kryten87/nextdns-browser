@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# get the version from package.json
+VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('package.json').toString()).version);")
+
+# build the docker image
+echo -e "\nBuilding Docker image version $VERSION"
+
+cd vite-frontend/dist
+docker build \
+  -f ../../docker/Dockerfile.frontend \
+  -t nextdns/frontend:latest \
+  .
+
+docker tag nextdns/frontend:latest "nextdns/frontend:$VERSION"
