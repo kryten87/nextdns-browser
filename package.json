@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "index.js",
   "author": "Dave Thomas <davet@ifit.com>",
-  "license": "MIT",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "./scripts/build.server && ./scripts/build.frontend",
     "dev:up": "docker compose --env-file ./nestjs-server/.env -f docker-compose.dev.yml up",
